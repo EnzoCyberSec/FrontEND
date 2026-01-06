@@ -1,8 +1,8 @@
-module org.example.frontend {
+module org.example.demo {
     requires javafx.controls;
     requires javafx.fxml;
 
 
-    opens org.example.frontend to javafx.fxml;
-    exports org.example.frontend;
+    opens org.example.demo to javafx.fxml;
+    exports org.example.demo;
 }
