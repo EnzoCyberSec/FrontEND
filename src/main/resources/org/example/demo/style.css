@@ -1,0 +1,42 @@
+.root {
+    -fx-background-color: #f8ecd9;
+}
+
+/* LOGO */
+.logo {
+    -fx-fit-width: 600;
+    -fx-preserve-ratio: true;
+}
+
+/* BOUTON PRINCIPAL - TOUCHER POUR COMMENCER */
+.btn-start {
+    -fx-background-color: #e46725;      /* orange */
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 20 60;                 /* taille du bouton */
+    -fx-background-radius: 40;          /* bords arrondis */
+    -fx-cursor: hand;
+}
+
+
+/* effet au survol (optionnel mais stylé) */
+.btn-start:hover {
+    -fx-background-color: #ff9f2e;
+}
+
+/* BOUTON CONNEXION */
+.btn-connexion {
+    -fx-background-color: transparent;
+    -fx-border-color: #e46725;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+
+    -fx-text-fill: #e46725;
+    -fx-font-size: 16px;
+    -fx-padding: 10 30;
+    -fx-cursor: hand;
+}
+
+

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.demo.MenuController"
+            styleClass="root">
+
+    <!-- TOP : logo en haut à gauche -->
+    <top>
+        <VBox spacing="10">
+
+            <!-- Logo -->
+            <HBox alignment="TOP_LEFT" styleClass="topbar">
+                <ImageView styleClass="logoSmall" fitWidth="220" preserveRatio="true">
+                    <image>
+                        <Image url="@images/logo.jpg"/>
+                    </image>
+                </ImageView>
+            </HBox>
+
+            <!-- Titre de la catégorie -->
+            <HBox alignment="CENTER">
+                <Label fx:id="title"
+                       text="Menus"
+                       styleClass="pageTitle"/>
+            </HBox>
+
+        </VBox>
+    </top>
+
+
+    <!-- LEFT : catégories -->
+    <left>
+        <VBox spacing="12" styleClass="sidebar">
+            <Label text="Catégories" styleClass="sidebarTitle"/>
+
+            <Button text="Home" styleClass="catBtn" onAction="#showHome"/>
+            <Button text="Menus" styleClass="catBtn" onAction="#showMenus"/>
+            <Button text="Entrée" styleClass="catBtn" onAction="#showEntree"/>
+            <Button text="Plats" styleClass="catBtn" onAction="#showPlats"/>
+            <Button text="Desserts" styleClass="catBtn" onAction="#showDesserts"/>
+            <Button text="Petite faim" styleClass="catBtn" onAction="#showPetiteFaim"/>
+            <Button text="Boisson" styleClass="catBtn" onAction="#showBoissons"/>
+        </VBox>
+    </left>
+
+    <!-- CENTER : titre + grille de produits -->
+    <center>
+        <VBox spacing="12" alignment="TOP_LEFT" styleClass="content">
+
+            <TilePane fx:id="grid"
+                      prefColumns="3"
+                      hgap="14" vgap="14"
+                      styleClass="grid"/>
+        </VBox>
+    </center>
+
+</BorderPane>
