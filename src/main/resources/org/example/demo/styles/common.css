@@ -438,3 +438,101 @@
     -fx-hbar-policy: never;
     -fx-fit-to-width: true;
 }
+/* ============================================
+   RESTAURATION SCROLLBAR MINIMALISTE
+   ============================================ */
+.content .scroll-pane {
+    -fx-hbar-policy: as-needed; /* Active le scroll horizontal si besoin */
+    -fx-vbar-policy: as-needed;
+    -fx-background-color: transparent;
+}
+
+.content .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Style bare-minimum pour la scrollbar */
+.content .scroll-bar:horizontal {
+    -fx-pref-height: 10; /* Hauteur fine */
+    -fx-visibility: visible;
+    -fx-opacity: 1;
+    -fx-background-color: transparent;
+}
+
+.content .scroll-bar:horizontal .thumb {
+    -fx-background-color: rgba(228, 103, 37, 0.5); /* Orange semi-transparent */
+    -fx-background-radius: 5;
+}
+
+.content .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}
+
+/* ============================================
+   NOUVEAUX STYLES POUR LES CARTES ET BOUTONS
+   ============================================ */
+.menuCardBtn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+.menuCardBtn:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.centerBox {
+    -fx-alignment: center;
+}
+
+/* Ajustement image produit dans la carte */
+.productImg {
+    -fx-fit-height: 100;
+    -fx-fit-width: 120;
+    -fx-preserve-ratio: true;
+}
+/* ---------- CARTE PRODUIT (Taille Réduite) ---------- */
+.productCard {
+    -fx-background-color: rgba(255,255,255,0.95);
+    -fx-background-radius: 18; /* Arrondi légèrement réduit */
+    -fx-padding: 10;           /* Moins de padding */
+    -fx-spacing: 8;
+
+    -fx-alignment: center;
+
+    /* TAILLE RÉDUITE ICI */
+    -fx-min-width: 180;
+    -fx-max-width: 180;
+    -fx-min-height: 200;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 10, 0, 0, 4);
+}
+
+.productCard:hover {
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-effect: dropshadow(gaussian, rgba(228, 103, 37, 0.3), 12, 0, 0, 5);
+}
+
+/* Image plus petite */
+.productImg {
+    -fx-fit-height: 80;  /* Était probablement plus grand avant */
+    -fx-fit-width: 100;
+    -fx-preserve-ratio: true;
+}
+
+.productName {
+    -fx-font-size: 14px; /* Police réduite */
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+.productPrice {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3bb54a;
+}

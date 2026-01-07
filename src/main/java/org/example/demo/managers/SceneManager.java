@@ -3,16 +3,16 @@ package org.example.demo.managers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class SceneManager {
     private static SceneManager instance;
     private Stage stage;
-    private Scene mainScene;
-    private BorderPane mainRoot;
+
+    // Taille de la fenêtre (Full HD par défaut)
     private static final double SCENE_WIDTH = 1920;
     private static final double SCENE_HEIGHT = 1080;
 
@@ -29,55 +29,63 @@ public class SceneManager {
         this.stage = stage;
     }
 
+    /**
+     * Charge la toute première scène (au lancement de l'app).
+     * Configure la fenêtre et ajoute le CSS global.
+     */
     public void loadInitialScene(String sceneName) throws IOException {
-        // Charger le premier fichier FXML et créer la Scene une seule fois
-        String fxmlPath = "/org/example/demo/views/" + sceneName + ".fxml";
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loadFXML(sceneName);
 
-        if (loader.getLocation() == null) {
-            throw new IOException("Cannot load FXML: " + fxmlPath);
-        }
+        Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
-        Parent root = loader.load();
-        mainScene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
+        // Ajout du CSS global (menu.css contient maintenant tout le style propre)
+        addCss(scene, "/org/example/demo/styles/menu.css");
+        // Si tu as encore des styles génériques dans common.css, décommente la ligne suivante :
+        // addCss(scene, "/org/example/demo/styles/common.css");
 
-        // Ajouter les CSS
-        try {
-            mainScene.getStylesheets().add(
-                    getClass().getResource("/org/example/demo/styles/menu.css").toExternalForm()
-            );
-        } catch (Exception ignored) {}
-
-        try {
-            mainScene.getStylesheets().add(
-                    getClass().getResource("/org/example/demo/styles/common.css").toExternalForm()
-            );
-        } catch (Exception ignored) {}
-
-        stage.setScene(mainScene);
-        mainRoot = (BorderPane) root;
+        stage.setScene(scene);
+        stage.show();
     }
 
+    /**
+     * Change complètement la scène affichée.
+     * C'est la méthode "propre" qui remplace toute la racine de la fenêtre.
+     */
     public void switchScene(String sceneName) throws IOException {
-        // Charger uniquement le contenu FXML
-        String fxmlPath = "/org/example/demo/views/" + sceneName + ".fxml";
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loadFXML(sceneName);
+        // On remplace la racine actuelle par la nouvelle page
+        // Cela résout les problèmes de superposition ou de barres fantômes
+        stage.getScene().setRoot(root);
+    }
 
-        if (loader.getLocation() == null) {
-            throw new IOException("Cannot load FXML: " + fxmlPath);
+    /**
+     * Méthode utilitaire pour charger un fichier FXML.
+     */
+    private Parent loadFXML(String sceneName) throws IOException {
+        String fxmlPath = "/org/example/demo/views/" + sceneName + ".fxml";
+        URL resource = getClass().getResource(fxmlPath);
+
+        if (resource == null) {
+            throw new IOException("Impossible de trouver le fichier FXML : " + fxmlPath);
         }
 
-        Parent content = loader.load();
+        FXMLLoader loader = new FXMLLoader(resource);
+        return loader.load();
+    }
 
-        // Remplacer le center du BorderPane principal
-        mainRoot.setCenter(content);
+    /**
+     * Méthode utilitaire pour ajouter un CSS en sécurité.
+     */
+    private void addCss(Scene scene, String cssPath) {
+        URL resource = getClass().getResource(cssPath);
+        if (resource != null) {
+            scene.getStylesheets().add(resource.toExternalForm());
+        } else {
+            System.err.println("Attention : Fichier CSS introuvable -> " + cssPath);
+        }
     }
 
     public Stage getStage() {
         return stage;
-    }
-
-    public BorderPane getMainRoot() {
-        return mainRoot;
     }
 }
