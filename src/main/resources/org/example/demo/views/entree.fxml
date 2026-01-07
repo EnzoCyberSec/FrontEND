@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.demo.controllers.EntreeController"
+            styleClass="root">
+
+    <top>
+        <VBox spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="topbar">
+                <ImageView styleClass="logoSmall" fitWidth="200" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo.jpg"/>
+                    </image>
+                </ImageView>
+                <Label fx:id="title" text="Entrées" styleClass="pageTitle"/>
+                <HBox spacing="10" style="-fx-hbox-grow: ALWAYS; -fx-alignment: CENTER_RIGHT;">
+                    <Button text="🛒 Panier" styleClass="btn btn-secondary" onAction="#goToCart"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox spacing="12" styleClass="sidebar">
+            <Button text="← Retour" styleClass="catBtn" onAction="#goBack"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="12" alignment="TOP_LEFT" styleClass="content">
+            <TilePane fx:id="grid"
+                      prefColumns="3"
+                      hgap="14" vgap="14"
+                      styleClass="grid"/>
+        </VBox>
+    </center>
+
+</BorderPane>

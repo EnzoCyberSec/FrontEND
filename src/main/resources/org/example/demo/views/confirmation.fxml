@@ -1,0 +1,60 @@
+<?XML version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.demo.controllers.ConfirmationController"
+            styleClass="root">
+
+    <top>
+        <VBox spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="topbar">
+                <ImageView styleClass="logoSmall" fitWidth="200" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo.jpg"/>
+                    </image>
+                </ImageView>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" alignment="CENTER" styleClass="content">
+            <Label fx:id="title" text="✓ Commande Confirmée !"
+                   styleClass="confirmationTitle"
+                   style="-fx-font-size: 36; -fx-text-fill: #22c55e;"/>
+
+            <VBox spacing="12" alignment="CENTER" style="-fx-border-color: #ddd; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 20;">
+                <Label fx:id="orderNumber" text="Numéro de commande : #12345"
+                       styleClass="orderInfoLabel"
+                       style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+                <Label fx:id="estimatedTime" text="Temps estimé : 20 minutes"
+                       styleClass="orderInfoLabel"
+                       style="-fx-font-size: 18;"/>
+            </VBox>
+
+            <Label text="Merci de votre commande !"
+                   styleClass="sectionTitle"
+                   style="-fx-font-size: 20;"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="12" alignment="CENTER" styleClass="bottomBar" style="-fx-padding: 16;">
+            <Button text="🏠 Accueil" styleClass="btn btn-secondary"
+                    style="-fx-min-width: 180;"
+                    onAction="#goHome"/>
+            <Button text="➕ Nouvelle Commande" styleClass="btn btn-primary"
+                    style="-fx-min-width: 180;"
+                    onAction="#newOrder"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

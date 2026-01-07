@@ -1,0 +1,137 @@
+.root {
+    -fx-background-color: #f8ecd9;
+}
+
+/* ---------- TOP ---------- */
+
+
+
+.topbar {
+    -fx-alignment: top-left;
+    -fx-padding: 10 20 10 20;
+    -fx-max-height: 120;
+    -fx-translate-x: 25;
+}
+
+.centerZone {
+    -fx-alignment: center;     /* centre le contenu */
+    -fx-padding: 20;           /* respiration */
+}
+
+.catBtn {
+    -fx-background-color: #f5f5f5;
+    -fx-text-fill: #333;
+
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 14 20;
+    -fx-min-width: 220;
+
+    -fx-background-radius: 22;
+    -fx-border-radius: 22;
+
+    -fx-cursor: hand;
+    -fx-translate-y: 50;
+}
+
+.catBtn:hover {
+    -fx-background-color: #ececec;
+}
+
+/* actif = ORANGE (une seule règle, pas 2) */
+.catBtn.active {
+    -fx-background-color: #e46725;
+    -fx-text-fill: white;
+}
+
+.catBtn:pressed {
+    -fx-background-color: #ddd;
+}
+
+/* ---------- CONTENT / GRID ---------- */
+.content {
+    -fx-padding: 0 0 0 16;
+    -fx-alignment: top-center;
+    -fx-padding: 20;
+}
+
+.grid {
+    -fx-padding: 6 0 0 0;
+    -fx-pref-width: 900;   /* force une largeur visible */
+    -fx-pref-height: 600;  /* force une hauteur visible */
+}
+
+/* ---------- CARTE PRODUIT ---------- */
+.productCard {
+    -fx-background-color: rgba(255,255,255,0.9);
+    -fx-background-radius: 22;
+    -fx-padding: 14;
+    -fx-spacing: 10;
+
+    -fx-spacing: 10;        /* <-- ancien spacing="10" */
+    -fx-alignment: center; /* <-- ancien alignment="CENTER" */
+
+    -fx-min-width: 260;
+    -fx-max-width: 260;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0, 0, 6);
+}
+
+.productName {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.productPrice {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3bb54a; /* vert prix */
+}
+
+.addBtn {
+    -fx-background-color: #3bb54a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 16;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+}
+
+.addBtn:hover {
+    -fx-background-color: #33a041;
+}
+
+/* ---------- BOTTOM BAR (Panier + Total) ---------- */
+.bottomBar {
+    -fx-background-color: rgba(255,255,255,0.75);
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 12, 0, 0, 4);
+    -fx-translate-y:-40;
+    -fx-pref-width: 1500;
+    -fx-max-width: 1500;
+}
+
+.cartBtn {
+    -fx-background-color: #e46725;
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 16 60;
+    -fx-background-radius: 40;
+    -fx-cursor: hand;
+    -fx-translate-x: 70;
+}
+
+.cartBtn:hover {
+    -fx-background-color: #d85e1f;
+}
+
+.totalText {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+

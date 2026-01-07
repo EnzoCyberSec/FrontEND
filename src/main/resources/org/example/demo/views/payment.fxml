@@ -1,0 +1,54 @@
+<?XML version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.demo.controllers.PaymentController"
+            styleClass="root">
+
+    <top>
+        <VBox spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="topbar">
+                <ImageView styleClass="logoSmall" fitWidth="200" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo.jpg"/>
+                    </image>
+                </ImageView>
+                <Label fx:id="title" text="Paiement" styleClass="pageTitle"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" alignment="CENTER" styleClass="content">
+            <Label fx:id="totalAmount" text="Montant à payer : 0.00 €" styleClass="totalLabel"/>
+            <Label text="Choisissez une méthode de paiement :" styleClass="sectionTitle"/>
+
+            <VBox spacing="12" alignment="CENTER">
+                <Button text="💳 Carte Bancaire" styleClass="btn btn-primary"
+                        style="-fx-min-width: 250; -fx-min-height: 60; -fx-font-size: 16;"
+                        onAction="#payByCreditCard"/>
+                <Button text="💵 Espèces" styleClass="btn btn-primary"
+                        style="-fx-min-width: 250; -fx-min-height: 60; -fx-font-size: 16;"
+                        onAction="#payCash"/>
+                <Button text="📱 QR Code (WeChat/Alipay)" styleClass="btn btn-primary"
+                        style="-fx-min-width: 250; -fx-min-height: 60; -fx-font-size: 16;"
+                        onAction="#payQRCode"/>
+            </VBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="12" styleClass="bottomBar" style="-fx-padding: 16;">
+            <Button text="← Retour au panier" styleClass="btn btn-secondary" onAction="#goBack"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
