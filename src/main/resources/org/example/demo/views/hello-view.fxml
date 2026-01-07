@@ -13,8 +13,8 @@
             styleClass="root">
 
     <center>
-        <VBox spacing="40" alignment="CENTER" styleClass="helloContent">
-            <ImageView styleClass="helloLogo" fitHeight="500" preserveRatio="true">
+        <VBox spacing="40" alignment="CENTER">
+            <ImageView fitHeight="500" preserveRatio="true">
                 <image>
                     <Image url="@../images/logo.jpg"/>
                 </image>

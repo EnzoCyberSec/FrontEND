@@ -14,7 +14,35 @@
     -fx-preserve-ratio: true;
 }
 
+/* ---------- BOTTOM BAR (Panier + Total) ---------- */
+.bottomBar {
+    -fx-background-color: rgba(255,255,255,0.75);
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 12, 0, 0, 4);
+    -fx-translate-y:-40;
+    -fx-pref-width: 1500;
+    -fx-max-width: 1500;
+}
 
+/* ============================================
+   SIDEBAR - PANNEAU LATÉRAL
+   ============================================ */
+
+.sidebarTitle {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-translate-x: 5;
+    -fx-translate-y: 25;
+}
+
+
+.topbar {
+    -fx-alignment: top-left;
+    -fx-padding: 10 20 10 20;
+    -fx-max-height: 120;
+    -fx-translate-x: 25;
+}
 
 /* ============================================
    CONTENU PRINCIPAL
@@ -197,12 +225,6 @@
     -fx-padding: 6 0;
 }
 
-.bottomBar {
-    -fx-background-color: #fff2e5;
-    -fx-padding: 16;
-    -fx-background-radius: 16 16 0 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, -4);
-}
 
 /* ============================================
    FORM ELEMENTS

@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.geometry.Insets?>
 <BorderPane fx:id="root"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.demo.controllers.BoissonController"
@@ -23,9 +24,6 @@
                     </image>
                 </ImageView>
                 <Label fx:id="title" text="Boissons" styleClass="pageTitle"/>
-                <HBox spacing="10" style="-fx-hbox-grow: ALWAYS; -fx-alignment: CENTER_RIGHT;">
-                    <Button text="🛒 Panier" styleClass="btn btn-secondary" onAction="#goToCart"/>
-                </HBox>
             </HBox>
         </VBox>
     </top>
@@ -44,5 +42,25 @@
                       styleClass="grid"/>
         </VBox>
     </center>
+
+    <bottom>
+        <HBox alignment="CENTER">
+            <BorderPane styleClass="bottomBar">
+                <center>
+                    <!-- ici on garde ton handler actuel goToCart -->
+                    <Button text="🛒 CART" styleClass="cartBtn" onAction="#goToCart"/>
+                </center>
+
+                <right>
+                    <!-- si tu n’as pas encore totalLabel dans MenusController, enlève fx:id -->
+                    <Label fx:id="totalLabel" text="Total: 0.00 €" styleClass="totalText"/>
+                </right>
+
+                <padding>
+                    <Insets top="10" right="20" bottom="10" left="20"/>
+                </padding>
+            </BorderPane>
+        </HBox>
+    </bottom>
 
 </BorderPane>
