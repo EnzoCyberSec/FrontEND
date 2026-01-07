@@ -3,7 +3,12 @@ package org.example.demo.managers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import org.example.demo.controllers.MenuWizardController;
+import org.example.demo.controllers.ProductDetailsController;
+import org.example.demo.models.Product;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,59 +35,90 @@ public class SceneManager {
     }
 
     /**
-     * Charge la toute première scène (au lancement de l'app).
-     * Configure la fenêtre et ajoute le CSS global.
+     * Charge la toute première scène.
      */
     public void loadInitialScene(String sceneName) throws IOException {
         Parent root = loadFXML(sceneName);
-
         Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
-
-        // Ajout du CSS global (menu.css contient maintenant tout le style propre)
         addCss(scene, "/org/example/demo/styles/menu.css");
-        // Si tu as encore des styles génériques dans common.css, décommente la ligne suivante :
-        // addCss(scene, "/org/example/demo/styles/common.css");
-
         stage.setScene(scene);
         stage.show();
     }
 
     /**
      * Change complètement la scène affichée.
-     * C'est la méthode "propre" qui remplace toute la racine de la fenêtre.
      */
     public void switchScene(String sceneName) throws IOException {
         Parent root = loadFXML(sceneName);
-        // On remplace la racine actuelle par la nouvelle page
-        // Cela résout les problèmes de superposition ou de barres fantômes
         stage.getScene().setRoot(root);
     }
 
     /**
-     * Méthode utilitaire pour charger un fichier FXML.
+     * Ouvre la fenêtre POPUP pour un produit unitaire.
      */
+    public void showProductDetails(Product product) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/views/product-details.fxml"));
+            Parent root = loader.load();
+
+            ProductDetailsController controller = loader.getController();
+            controller.setProduct(product);
+
+            Stage popupStage = new Stage();
+            popupStage.initOwner(stage);
+            popupStage.initModality(Modality.WINDOW_MODAL);
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+
+            Scene scene = new Scene(root);
+            scene.setFill(null);
+            popupStage.setScene(scene);
+            popupStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erreur Popup Produit : " + e.getMessage());
+        }
+    }
+
+    /**
+     * Ouvre le WIZARD pour composer un menu.
+     */
+    public void showMenuWizard(String menuType) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/views/menu-wizard.fxml"));
+            Parent root = loader.load();
+
+            MenuWizardController controller = loader.getController();
+            controller.startWizard(menuType);
+
+            Stage popupStage = new Stage();
+            popupStage.initOwner(stage);
+            popupStage.initModality(Modality.WINDOW_MODAL);
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+
+            Scene scene = new Scene(root);
+            scene.setFill(null);
+            popupStage.setScene(scene);
+            popupStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erreur Wizard Menu : " + e.getMessage());
+        }
+    }
+
     private Parent loadFXML(String sceneName) throws IOException {
         String fxmlPath = "/org/example/demo/views/" + sceneName + ".fxml";
         URL resource = getClass().getResource(fxmlPath);
-
-        if (resource == null) {
-            throw new IOException("Impossible de trouver le fichier FXML : " + fxmlPath);
-        }
-
+        if (resource == null) throw new IOException("FXML introuvable : " + fxmlPath);
         FXMLLoader loader = new FXMLLoader(resource);
         return loader.load();
     }
 
-    /**
-     * Méthode utilitaire pour ajouter un CSS en sécurité.
-     */
     private void addCss(Scene scene, String cssPath) {
         URL resource = getClass().getResource(cssPath);
-        if (resource != null) {
-            scene.getStylesheets().add(resource.toExternalForm());
-        } else {
-            System.err.println("Attention : Fichier CSS introuvable -> " + cssPath);
-        }
+        if (resource != null) scene.getStylesheets().add(resource.toExternalForm());
+        else System.err.println("CSS introuvable : " + cssPath);
     }
 
     public Stage getStage() {

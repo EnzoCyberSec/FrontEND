@@ -182,3 +182,21 @@
     -fx-font-weight: bold;
     -fx-text-fill: #333;
 }
+
+.qtyBtn {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-background-radius: 50%; /* Rond */
+    -fx-cursor: hand;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 50%;
+}
+
+.qtyBtn:hover {
+    -fx-background-color: #e0e0e0;
+    -fx-border-color: #bbb;
+}
