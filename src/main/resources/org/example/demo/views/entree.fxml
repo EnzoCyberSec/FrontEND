@@ -70,45 +70,8 @@
         <VBox styleClass="content">
             <ScrollPane fitToWidth="true" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED" style="-fx-background-color: transparent; -fx-background: transparent;">
                 <content>
-                    <TilePane fx:id="grid" prefColumns="3" styleClass="grid" tileAlignment="TOP_LEFT">
-
-                        <StackPane>
-                            <Button onAction="#onSelectMenu" styleClass="menuCardBtn">
-                                <graphic>
-                                    <VBox styleClass="productCard">
-                                        <ImageView styleClass="productImg" fitHeight="90" fitWidth="120" preserveRatio="true"><image><Image url="@../images/logo.jpg"/></image></ImageView>
-                                        <Label text="Nems Poulet" styleClass="productName"/>
-                                        <Label text="4.50 €" styleClass="productPrice"/>
-                                    </VBox>
-                                </graphic>
-                            </Button>
-                        </StackPane>
-
-                        <StackPane>
-                            <Button onAction="#onSelectMenu" styleClass="menuCardBtn">
-                                <graphic>
-                                    <VBox styleClass="productCard">
-                                        <ImageView styleClass="productImg" fitHeight="90" fitWidth="120" preserveRatio="true"><image><Image url="@../images/logo.jpg"/></image></ImageView>
-                                        <Label text="Samoussa Boeuf" styleClass="productName"/>
-                                        <Label text="5.00 €" styleClass="productPrice"/>
-                                    </VBox>
-                                </graphic>
-                            </Button>
-                        </StackPane>
-
-                        <StackPane>
-                            <Button onAction="#onSelectMenu" styleClass="menuCardBtn">
-                                <graphic>
-                                    <VBox styleClass="productCard">
-                                        <ImageView styleClass="productImg" fitHeight="90" fitWidth="120" preserveRatio="true"><image><Image url="@../images/logo.jpg"/></image></ImageView>
-                                        <Label text="Salade Composée" styleClass="productName"/>
-                                        <Label text="6.50 €" styleClass="productPrice"/>
-                                    </VBox>
-                                </graphic>
-                            </Button>
-                        </StackPane>
-
-                    </TilePane>
+                    <!-- TilePane VIDE : rempli uniquement par l'API -->
+                    <TilePane fx:id="grid" prefColumns="3" styleClass="grid" tileAlignment="TOP_LEFT"/>
                 </content>
             </ScrollPane>
         </VBox>
