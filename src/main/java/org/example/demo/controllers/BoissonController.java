@@ -30,6 +30,7 @@ public class BoissonController {
     @FXML private TilePane grid;
 
     public static class CategorieDto { public int idCategorie; public String nom; }
+
     public static class BoissonDto {
         public int idPlat;
         public String nom;
@@ -42,13 +43,13 @@ public class BoissonController {
     private static final String BASE = "/org/example/demo/images/boissons/";
     private static final String DEFAULT_IMG = BASE + "default.png";
 
-    // ✅ clés normalisées (minuscules + sans espaces/ponctuation)
-    private static final Map<String, String> IMG_BY_KEY = Map.of(
-            "asianbeer", "Asianbeer.png",
-            "cocacola", "Cocacola.png",
-            "evian", "Mineralwater.png",
-            "homemadeicedtea", "Homemadeicedtea.png",
-            "lycheejuice", "Lycheejuice.png"
+    // ✅ NOMS EXACTS BDD/API -> FICHIERS IMAGES
+    private static final Map<String, String> IMG_BY_NAME = Map.of(
+            "Homemade iced tea", "Homemadeicedtea.png",
+            "Coca Cola", "Cocacola.png",
+            "Mineral water", "Mineralwater.png",
+            "Asian beer", "Asianbeer.png",
+            "Lychee juice", "Lycheejuice.png"
     );
 
     @FXML
@@ -62,30 +63,14 @@ public class BoissonController {
         if (totalLabel != null) totalLabel.setText(String.format("Total: %.2f €", total));
     }
 
-    // transforme "Coca cola 33cl" -> "cocacola33cl" puis on enlève les chiffres => "cocacola"
-    private String keyOf(String name) {
-        if (name == null) return "";
-        String s = name.toLowerCase();
-        s = s.replaceAll("[^a-z]", ""); // garde uniquement lettres (virer espaces, -, chiffres, etc.)
-        return s;
-    }
-
     private String imagePathFor(BoissonDto b) {
-        String key = keyOf(b != null ? b.nom : null);
+        if (b == null || b.nom == null) return DEFAULT_IMG;
 
-        // bonus: si la BDD contient "cocacola33cl" -> on reconnait "cocacola"
-        if (key.contains("cocacola") || key.contains("coca")) return BASE + "Cocacola.png";
-        if (key.contains("evian")) return BASE + "Mineralwater.png";
-        if (key.contains("asianbeer") || (key.contains("asian") && key.contains("beer"))) return BASE + "Asianbeer.png";
-        if (key.contains("homemade") || (key.contains("iced") && key.contains("tea"))) return BASE + "Homemadeicedtea.png";
-        if (key.contains("lychee") || key.contains("juice")) return BASE + "Lycheejuice.png";
+        String file = IMG_BY_NAME.get(b.nom);
+        if (file == null) return DEFAULT_IMG;
 
-        // sinon: mapping direct
-        String file = IMG_BY_KEY.get(key);
-        if (file != null) return BASE + file;
-
-        // ✅ PAS DE LOGO : fallback sur default.png dans boissons
-        return DEFAULT_IMG;
+        String path = BASE + file;
+        return (getClass().getResource(path) != null) ? path : DEFAULT_IMG;
     }
 
     private ImageView squareImage(String resourcePath, double size) {
@@ -127,7 +112,10 @@ public class BoissonController {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) return;
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                System.err.println("Erreur API /categories/3/plats : HTTP " + conn.getResponseCode());
+                return;
+            }
 
             try (InputStream is = conn.getInputStream();
                  InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
