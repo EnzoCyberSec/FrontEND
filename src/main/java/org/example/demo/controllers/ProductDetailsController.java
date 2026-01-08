@@ -32,21 +32,19 @@ public class ProductDetailsController {
     @FXML private Label productPrice;
     @FXML private Label productDescription;
     @FXML private Label quantityLabel;
-    @FXML private VBox optionsContainer; // Dynamic container from merged FXML
+    @FXML private VBox optionsContainer;
 
     private Product product;
     private int quantity = 1;
     private double basePrice;
 
-    // Storage for dynamically generated CheckBoxes
     private final List<CheckBox> optionCheckBoxes = new ArrayList<>();
     private Label optionsTitleLabel;
 
-    // DTO for mapping /plats/{id}/options
     private static class OptionDto {
         int idOption;
         String libelle;
-        String type;   // SPICE_LEVEL, SIDE, EXTRA, ...
+        String type;
         double prix;
     }
 
@@ -54,12 +52,10 @@ public class ProductDetailsController {
     public void initialize() {
         quantityLabel.setText(String.valueOf(quantity));
 
-        // Add title inside options container if present
+        // Add title by default (will be removed later if category is Dessert/Drink)
         if (optionsContainer != null) {
             optionsTitleLabel = new Label("Customize your order:");
-            optionsTitleLabel.setStyle(
-                    "-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 0 0 10 0;"
-            );
+            optionsTitleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 0 0 10 0;");
             optionsContainer.getChildren().add(optionsTitleLabel);
         }
     }
@@ -83,11 +79,31 @@ public class ProductDetailsController {
             productDescription.setText("No description available.");
         }
 
-        // Load image (robust logic)
         loadImage(product.getImageUrl());
 
-        // Load product-specific options from API
-        loadOptionsFromApi(product.getId());
+        // =================================================================
+        // LOGIQUE MODIFIÉE ICI :
+        // On ne charge les options que si ce n'est PAS un Dessert ou une Boisson
+        // =================================================================
+        String category = product.getCategory(); // Ex: "Entrée", "Plat", "Dessert", "Boisson"
+
+        // Vérification insensible à la casse ("Dessert", "desserts", "Boisson", "Drinks"...)
+        boolean isExcluded = category != null && (
+                category.toLowerCase().contains("dessert") ||
+                        category.toLowerCase().contains("boisson") ||
+                        category.toLowerCase().contains("drink")
+        );
+
+        if (isExcluded) {
+            // Si c'est un dessert ou une boisson, on vide le container
+            // pour enlever le titre "Customize your order" ajouté dans initialize()
+            if (optionsContainer != null) {
+                optionsContainer.getChildren().clear();
+            }
+        } else {
+            // Sinon (Entrées, Plats), on charge les options depuis l'API
+            loadOptionsFromApi(product.getId());
+        }
     }
 
     private void loadImage(String url) {
@@ -108,15 +124,11 @@ public class ProductDetailsController {
     }
 
     private void loadDefaultImage() {
-        try (InputStream is = getClass().getResourceAsStream(
-                "/org/example/demo/images/logo.jpg")) {
+        try (InputStream is = getClass().getResourceAsStream("/org/example/demo/images/logo.jpg")) {
             if (is != null) productImage.setImage(new Image(is));
         } catch (IOException ignored) {}
     }
 
-    /**
-     * Calls API GET /plats/{id}/options to retrieve available options
-     */
     private void loadOptionsFromApi(int platId) {
         if (optionsContainer == null) return;
 
@@ -136,8 +148,7 @@ public class ProductDetailsController {
             }
 
             try (InputStream is = conn.getInputStream();
-                 InputStreamReader reader = new InputStreamReader(
-                         is, StandardCharsets.UTF_8)) {
+                 InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 
                 Gson gson = new GsonBuilder().create();
                 OptionDto[] options = gson.fromJson(reader, OptionDto[].class);
@@ -154,9 +165,6 @@ public class ProductDetailsController {
         }
     }
 
-    /**
-     * Builds the options UI (CheckBoxes grouped by type)
-     */
     private void displayOptions(OptionDto[] options) {
         Map<String, VBox> groups = new LinkedHashMap<>();
 
@@ -204,9 +212,6 @@ public class ProductDetailsController {
         return opt.libelle;
     }
 
-    /**
-     * Recalculates displayed unit price (Base price + selected options)
-     */
     private void updateDisplayedPrice() {
         double extra = computeSelectedOptionsExtra();
         double unitPrice = basePrice + extra;
@@ -224,8 +229,6 @@ public class ProductDetailsController {
         return extra;
     }
 
-    // ==================== Quantity Management ====================
-
     @FXML
     private void increaseQuantity() {
         quantity++;
@@ -239,8 +242,6 @@ public class ProductDetailsController {
             quantityLabel.setText(String.valueOf(quantity));
         }
     }
-
-    // ==================== Bottom Actions ====================
 
     @FXML
     private void addToCart() {
@@ -273,9 +274,6 @@ public class ProductDetailsController {
         );
 
         Cart.getInstance().addItem(pWithOptions, quantity);
-
-        System.out.println("Added to cart: " + pWithOptions.getName() + " x" + quantity);
-
         closeWindow();
     }
 
