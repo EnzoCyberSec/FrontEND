@@ -34,7 +34,8 @@ public class SceneManager {
     }
 
     /**
-     * Charge la toute première scène.
+     * Charge la toute première scène (généralement hello-view).
+     * Applique la feuille de style globale menu.css.
      */
     public void loadInitialScene(String sceneName) throws IOException {
         Parent root = loadFXML(sceneName);
@@ -45,7 +46,8 @@ public class SceneManager {
     }
 
     /**
-     * Change complètement la scène affichée.
+     * Change complètement la scène affichée dans la fenêtre principale.
+     * Exemple : switchScene("accueil"), switchScene("panier"), switchScene("stats").
      */
     public void switchScene(String sceneName) throws IOException {
         Parent root = loadFXML(sceneName);
@@ -53,44 +55,51 @@ public class SceneManager {
     }
 
     /**
-     * Ouvre la fenêtre POPUP pour un produit unitaire.
+     * Ouvre la fenêtre POPUP modale pour afficher les détails d'un produit.
+     * Le fond est transparent pour permettre des effets visuels arrondis/ombres.
      */
     public void showProductDetails(Product product) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/views/product-details.fxml"));
             Parent root = loader.load();
 
+            // Injection du produit dans le contrôleur du popup
             ProductDetailsController controller = loader.getController();
             controller.setProduct(product);
 
             Stage popupStage = new Stage();
             popupStage.initOwner(stage);
-            popupStage.initModality(Modality.WINDOW_MODAL);
-            popupStage.initStyle(StageStyle.TRANSPARENT);
+            popupStage.initModality(Modality.WINDOW_MODAL); // Bloque la fenêtre principale tant que ouvert
+            popupStage.initStyle(StageStyle.TRANSPARENT);   // Style transparent (pas de barre Windows classique)
 
             Scene scene = new Scene(root);
-            scene.setFill(null);
+            scene.setFill(null); // Important pour la transparence du PNG de fond/border-radius
             popupStage.setScene(scene);
             popupStage.showAndWait();
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Erreur Popup Produit : " + e.getMessage());
+            System.err.println("Erreur lors de l'ouverture du Popup Produit : " + e.getMessage());
         }
     }
+
+    // --- Méthodes utilitaires privées ---
 
     private Parent loadFXML(String sceneName) throws IOException {
         String fxmlPath = "/org/example/demo/views/" + sceneName + ".fxml";
         URL resource = getClass().getResource(fxmlPath);
-        if (resource == null) throw new IOException("FXML introuvable : " + fxmlPath);
+        if (resource == null) throw new IOException("Fichier FXML introuvable : " + fxmlPath);
         FXMLLoader loader = new FXMLLoader(resource);
         return loader.load();
     }
 
     private void addCss(Scene scene, String cssPath) {
         URL resource = getClass().getResource(cssPath);
-        if (resource != null) scene.getStylesheets().add(resource.toExternalForm());
-        else System.err.println("CSS introuvable : " + cssPath);
+        if (resource != null) {
+            scene.getStylesheets().add(resource.toExternalForm());
+        } else {
+            System.err.println("Fichier CSS introuvable : " + cssPath);
+        }
     }
 
     public Stage getStage() {

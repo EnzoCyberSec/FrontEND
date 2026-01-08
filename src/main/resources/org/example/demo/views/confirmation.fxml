@@ -1,4 +1,4 @@
-<?XML version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -15,10 +15,10 @@
 
     <top>
         <VBox spacing="10">
-            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="topbar">
-                <ImageView styleClass="logoSmall" fitWidth="200" preserveRatio="true">
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="topbar" style="-fx-padding: 10 20;">
+                <ImageView styleClass="logoSmall" fitWidth="180" preserveRatio="true">
                     <image>
-                        <Image url="@../images/test.jpg"/>
+                        <Image url="@../images/logo.jpg"/>
                     </image>
                 </ImageView>
             </HBox>
@@ -26,33 +26,47 @@
     </top>
 
     <center>
-        <VBox spacing="20" alignment="CENTER" styleClass="content">
-            <Label fx:id="title" text="✓ Commande Confirmée !"
-                   styleClass="confirmationTitle"
-                   style="-fx-font-size: 36; -fx-text-fill: #22c55e;"/>
+        <VBox spacing="18" alignment="CENTER" styleClass="confirmContent">
 
-            <VBox spacing="12" alignment="CENTER" style="-fx-border-color: #ddd; -fx-border-width: 2; -fx-border-radius: 10; -fx-padding: 20;">
-                <Label fx:id="orderNumber" text="Numéro de commande : #12345"
-                       styleClass="orderInfoLabel"
-                       style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-                <Label fx:id="estimatedTime" text="Temps estimé : 20 minutes"
-                       styleClass="orderInfoLabel"
-                       style="-fx-font-size: 18;"/>
+            <Label text="✓" styleClass="confirmIcon"
+                   style="-fx-font-size: 60px; -fx-text-fill: #22c55e;"/>
+
+            <Label text="Commande Confirmée !"
+                   styleClass="confirmTitle"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+
+            <Label text="Merci de votre visite !"
+                   styleClass="confirmSubtitle"
+                   style="-fx-font-size: 18px; -fx-text-fill: #666;"/>
+
+            <VBox spacing="8" alignment="CENTER"
+                  styleClass="confirmInfoBox"
+                  style="-fx-background-color: #f9f9f9; -fx-padding: 20; -fx-background-radius: 10; -fx-max-width: 400;">
+
+                <Label fx:id="orderNumber"
+                       text="Numéro de commande : #..."
+                       styleClass="confirmInfoTitle"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                <Label fx:id="estimatedTime"
+                       text="Temps estimé : ..."
+                       styleClass="confirmInfoText"
+                       style="-fx-font-size: 16px; -fx-text-fill: #555;"/>
             </VBox>
 
-            <Label text="Merci de votre commande !"
-                   styleClass="sectionTitle"
-                   style="-fx-font-size: 20;"/>
         </VBox>
     </center>
 
     <bottom>
-        <HBox spacing="12" alignment="CENTER" styleClass="bottomBar" style="-fx-padding: 16;">
-            <Button text="🏠 Accueil" styleClass="btn btn-secondary"
-                    style="-fx-min-width: 180;"
+        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 0 0 30 0;">
+            <Button text="🏠 Accueil"
+                    styleClass="cartActionBtn, cartActionSecondary, cartActionWide"
+                    style="-fx-font-size: 16px; -fx-padding: 12 30;"
                     onAction="#goHome"/>
-            <Button text="➕ Nouvelle Commande" styleClass="btn btn-primary"
-                    style="-fx-min-width: 180;"
+
+            <Button text="➕ Nouvelle Commande"
+                    styleClass="cartActionBtn, cartActionPrimary, cartActionWide"
+                    style="-fx-font-size: 16px; -fx-padding: 12 30;"
                     onAction="#newOrder"/>
         </HBox>
     </bottom>

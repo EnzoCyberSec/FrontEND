@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -18,7 +17,6 @@
                    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0, 0, 0);
                    -fx-padding: 20;">
 
-    <!-- TOP : Image + name + price -->
     <top>
         <VBox alignment="CENTER" spacing="15">
             <ImageView fx:id="productImage"
@@ -32,78 +30,70 @@
 
             <Label fx:id="productName"
                    text="Product Name"
-                   style="-fx-font-size: 24px;
-                          -fx-font-weight: bold;
-                          -fx-text-fill: #333;"/>
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
 
             <Label fx:id="productPrice"
                    text="€12.50"
-                   style="-fx-font-size: 20px;
-                          -fx-font-weight: bold;
-                          -fx-text-fill: #e46725;"/>
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #e46725;"/>
         </VBox>
     </top>
 
-    <!-- CENTER : description + dynamic options + quantity -->
     <center>
         <VBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 20 0;">
 
             <Label fx:id="productDescription"
-                   text="Product description"
+                   text="Description du produit..."
                    wrapText="true"
-                   style="-fx-font-size: 14px;
-                          -fx-text-fill: #666;
-                          -fx-text-alignment: center;"
+                   style="-fx-font-size: 14px; -fx-text-fill: #666; -fx-text-alignment: center;"
                    maxWidth="400"/>
 
-            <!-- Container dynamically filled by the controller -->
             <VBox fx:id="optionsContainer"
                   spacing="10"
                   alignment="CENTER_LEFT"
-                  style="-fx-background-color: #f9f9f9;
-                         -fx-padding: 15;
-                         -fx-background-radius: 10;"
+                  style="-fx-background-color: #f9f9f9; -fx-padding: 15; -fx-background-radius: 10;"
                   maxWidth="400">
-                <!-- Controller will add title + CheckBoxes here -->
             </VBox>
-
-            <!-- Quantity -->
-            <HBox spacing="10" alignment="CENTER">
-                <Label text="Quantity:" style="-fx-font-weight: bold;"/>
-                <Button text="-"
-                        onAction="#decreaseQuantity"
-                        style="-fx-background-radius: 50;
-                               -fx-min-width: 30;"/>
-                <Label fx:id="quantityLabel"
-                       text="1"
-                       style="-fx-font-size: 16px;
-                              -fx-font-weight: bold;"/>
-                <Button text="+"
-                        onAction="#increaseQuantity"
-                        style="-fx-background-radius: 50;
-                               -fx-min-width: 30;"/>
-            </HBox>
 
         </VBox>
     </center>
 
-    <!-- BOTTOM : buttons -->
     <bottom>
-        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-            <Button text="Close"
-                    onAction="#closeWindow"
-                    style="-fx-background-color: #cccccc;
-                           -fx-text-fill: #333;
-                           -fx-background-radius: 20;
-                           -fx-padding: 8 20;"/>
+        <VBox spacing="15">
+            <HBox alignment="CENTER" spacing="15">
+                <Button text="-"
+                        onAction="#decreaseQuantity"
+                        style="-fx-font-size: 18px; -fx-min-width: 40px; -fx-background-radius: 20;"/>
 
-            <Button text="Add to cart"
-                    onAction="#addToCart"
-                    style="-fx-background-color: #e46725;
-                           -fx-text-fill: white;
-                           -fx-background-radius: 20;
-                           -fx-padding: 8 20;"/>
-        </HBox>
+                <Label fx:id="quantityLabel"
+                       text="1"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+
+                <Button text="+"
+                        onAction="#increaseQuantity"
+                        style="-fx-font-size: 18px; -fx-min-width: 40px; -fx-background-radius: 20;"/>
+            </HBox>
+
+            <HBox spacing="15" alignment="CENTER">
+                <Button text="Close"
+                        onAction="#closeWindow"
+                        style="-fx-background-color: #eee;
+                               -fx-text-fill: #333;
+                               -fx-font-size: 16px;
+                               -fx-background-radius: 30;
+                               -fx-padding: 10 30;
+                               -fx-cursor: hand;"/>
+
+                <Button text="Add to cart"
+                        onAction="#addToCart"
+                        style="-fx-background-color: #e46725;
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 30;
+                               -fx-padding: 10 30;
+                               -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
     </bottom>
 
 </BorderPane>

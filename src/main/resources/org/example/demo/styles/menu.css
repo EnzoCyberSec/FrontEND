@@ -25,6 +25,7 @@
     -fx-font-size: 28px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
+    -fx-translate-y: -100;
     /* On garde le padding mais on évite les translates négatifs excessifs */
     -fx-padding: 10 0 20 0;
 }
@@ -320,22 +321,6 @@
 .confirmationTitle { -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #22c55e; -fx-padding: 20 0; }
 .orderInfoLabel { -fx-font-size: 18px; -fx-text-fill: #333; -fx-padding: 6 0; }
 
-/* ============================================
-   GLOBAL & LAYOUT
-   ============================================ */
-.root {
-    -fx-background-color: #f8ecd9;
-    -fx-font-family: "Segoe UI", sans-serif;
-}
-
-.pageTitle {
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333;
-
-    /* REMONTER LE TITRE */
-    -fx-translate-y: -100;
-}
 
 /* Logo */
 .logoSmall {
@@ -524,4 +509,151 @@
 .bottomBar {
     -fx-background-color: transparent;
     -fx-padding: 16 40;
+}
+
+/* ===== Cart bottom (comme Accueil) ===== */
+.bottomWrapper {
+    -fx-background-color: #fff2e5;
+    -fx-background-radius: 32;
+    -fx-border-radius: 32;
+
+    -fx-min-width: 900;
+    -fx-max-width: 1200;
+    -fx-min-height: 90;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, -2);
+}
+
+/* Barre du panier (contenu) */
+.cartBottomBar {
+    -fx-background-color: transparent;
+    -fx-padding: 18 30;
+}
+
+/* Total */
+.cartTotalLabel {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.cartTotalValue {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e46725;
+}
+
+/* Zone boutons */
+.cartActionsBar {
+    -fx-background-color: transparent;
+}
+
+/* ===== Boutons panier (inspirés du cartBtn) ===== */
+.cartActionBtn {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 12 22;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+
+    /* IMPORTANT: enlève le contour bleu focus */
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 12, 0.2, 0, 5);
+}
+
+.cartActionSecondary {
+    -fx-background-color: white;
+    -fx-text-fill: #2b2b2b;
+    -fx-border-color: rgba(0,0,0,0.12);
+    -fx-border-width: 2;
+}
+
+.cartActionSecondary:hover {
+    -fx-background-color: #f6f6f6;
+}
+
+.cartActionSecondary:pressed {
+    -fx-background-color: #eeeeee;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 10, 0.2, 0, 3);
+}
+
+.cartActionPrimary {
+    -fx-background-color: #e46725;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.cartActionPrimary:hover {
+    -fx-background-color: #ff9f2e;
+}
+
+.cartActionPrimary:pressed {
+    -fx-background-color: #d85f22;
+    -fx-effect: dropshadow(gaussian, rgba(230,103,37,0.18), 10, 0.2, 0, 3);
+}
+
+.cartActionWide {
+    -fx-min-width: 230px;
+}
+
+/* =========================
+   CONFIRMATION PAGE
+   ========================= */
+
+.confirmTop {
+    -fx-padding: 40 0 0 0;
+}
+
+.confirmContent {
+    -fx-padding: 20 40;
+}
+
+.confirmIcon {
+    -fx-font-size: 90px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #22c55e;
+}
+
+.confirmTitle {
+    -fx-font-size: 48px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #22c55e;
+}
+
+.confirmSubtitle {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2b2b2b;
+}
+
+.confirmInfoBox {
+    -fx-min-width: 900px;
+    -fx-max-width: 1100px;
+    -fx-padding: 22 26;
+    -fx-background-color: rgba(255,255,255,0.55);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(0,0,0,0.10);
+    -fx-border-radius: 18;
+    -fx-border-width: 2;
+}
+
+.confirmInfoTitle {
+    -fx-font-size: 24px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #333;
+}
+
+.confirmInfoText {
+    -fx-font-size: 18px;
+    -fx-text-fill: #444;
+}
+
+.confirmBottom {
+    -fx-padding: 0 0 26 0;
 }

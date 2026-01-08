@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="root"
@@ -43,25 +44,36 @@
     </center>
 
     <bottom>
-        <VBox>
-            <HBox style="-fx-background-color: white; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 0, -5, 0, 0);">
-                <Label text="Total à payer :" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="totalLabel" text="0.00 €" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #e46725;"/>
-            </HBox>
+        <HBox alignment="CENTER" style="-fx-padding: 0 0 24 0;">
+            <StackPane styleClass="bottomWrapper">
+                <BorderPane styleClass="cartBottomBar">
 
-            <HBox spacing="20" alignment="CENTER" style="-fx-padding: 20; -fx-background-color: #f8ecd9;">
-                <Button text="← Ajouter d'autres articles" styleClass="btn btn-secondary"
-                        onAction="#goBack" prefHeight="50"/>
+                    <left>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Total à payer :" styleClass="cartTotalLabel"/>
+                            <Label fx:id="totalLabel" text="0.00 €" styleClass="cartTotalValue"/>
+                        </HBox>
+                    </left>
 
-                <Button text="🗑️ Vider" styleClass="btn btn-secondary"
-                        onAction="#clearCart" prefHeight="50"/>
+                    <center>
+                        <HBox spacing="16" alignment="CENTER" styleClass="cartActionsBar">
+                            <Button text="← Ajouter d'autres articles"
+                                    styleClass="cartActionBtn, cartActionSecondary, cartActionWide"
+                                    onAction="#goBack"/>
 
-                <Button text="Payer &amp; Commander ➤" styleClass="btn btn-primary"
-                        style="-fx-font-size: 20px; -fx-padding: 10 40;"
-                        onAction="#checkout" prefHeight="60"/>
-            </HBox>
-        </VBox>
+                            <Button text="🗑️ Vider"
+                                    styleClass="cartActionBtn, cartActionSecondary"
+                                    onAction="#clearCart"/>
+
+                            <Button text="Payer &amp; Commander ➤"
+                                    styleClass="cartActionBtn, cartActionPrimary, cartActionWide"
+                                    onAction="#checkout"/>
+                        </HBox>
+                    </center>
+
+                </BorderPane>
+            </StackPane>
+        </HBox>
     </bottom>
 
 </BorderPane>

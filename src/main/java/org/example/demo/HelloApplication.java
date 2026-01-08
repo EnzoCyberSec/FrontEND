@@ -14,7 +14,7 @@ public class HelloApplication extends Application {
         // Charger hello-view.fxml via SceneManager
         SceneManager.getInstance().loadInitialScene("hello-view");
 
-        stage.setTitle("Restaurant Menu");
+        stage.setTitle("Wok & Roll");
         stage.setFullScreen(true);
         stage.show();
     }

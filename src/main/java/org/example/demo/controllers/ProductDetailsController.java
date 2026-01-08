@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -24,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * Popup de détails produit avec options dynamiques depuis l'API.
+ * Product details popup with dynamic options loaded from the API.
  */
 public class ProductDetailsController {
 
@@ -33,16 +32,17 @@ public class ProductDetailsController {
     @FXML private Label productPrice;
     @FXML private Label productDescription;
     @FXML private Label quantityLabel;
-    @FXML private VBox optionsContainer;
+    @FXML private VBox optionsContainer; // Dynamic container from merged FXML
 
     private Product product;
     private int quantity = 1;
     private double basePrice;
 
+    // Storage for dynamically generated CheckBoxes
     private final List<CheckBox> optionCheckBoxes = new ArrayList<>();
     private Label optionsTitleLabel;
 
-    // DTO pour mapper /plats/{id}/options
+    // DTO for mapping /plats/{id}/options
     private static class OptionDto {
         int idOption;
         String libelle;
@@ -52,32 +52,48 @@ public class ProductDetailsController {
 
     @FXML
     public void initialize() {
-        // Quantité initiale
         quantityLabel.setText(String.valueOf(quantity));
 
-        // Titre de la zone options
+        // Add title inside options container if present
         if (optionsContainer != null) {
-            optionsTitleLabel = new Label("Personnalisez votre commande :");
-            optionsTitleLabel.setStyle("-fx-font-weight: bold;");
+            optionsTitleLabel = new Label("Customize your order:");
+            optionsTitleLabel.setStyle(
+                    "-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 0 0 10 0;"
+            );
             optionsContainer.getChildren().add(optionsTitleLabel);
         }
     }
 
     /**
-     * Appelé par SceneManager.showProductDetails(product)
+     * Main method called by SceneManager to inject the product.
      */
     public void setProduct(Product product) {
         this.product = product;
         this.basePrice = product.getPrice();
+        this.quantity = 1;
+        quantityLabel.setText("1");
 
+        // UI text
         productName.setText(product.getName());
         productPrice.setText(String.format("%.2f €", basePrice));
-        productDescription.setText(product.getDescription());
 
-        // Image : Product.imageUrl est un chemin de ressource (ex: /org/example/demo/images/logo.jpg)
+        if (product.getDescription() != null && !product.getDescription().isEmpty()) {
+            productDescription.setText(product.getDescription());
+        } else {
+            productDescription.setText("No description available.");
+        }
+
+        // Load image (robust logic)
+        loadImage(product.getImageUrl());
+
+        // Load product-specific options from API
+        loadOptionsFromApi(product.getId());
+    }
+
+    private void loadImage(String url) {
         try {
-            if (product.getImageUrl() != null && !product.getImageUrl().isBlank()) {
-                InputStream is = getClass().getResourceAsStream(product.getImageUrl());
+            if (url != null && !url.isBlank()) {
+                InputStream is = getClass().getResourceAsStream(url);
                 if (is != null) {
                     productImage.setImage(new Image(is));
                 } else {
@@ -87,32 +103,24 @@ public class ProductDetailsController {
                 loadDefaultImage();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             loadDefaultImage();
         }
-
-        // Charger les options pour ce plat
-        loadOptionsFromApi(product.getId());
     }
 
     private void loadDefaultImage() {
-        try (InputStream is = getClass().getResourceAsStream("/org/example/demo/images/logo.jpg")) {
-            if (is != null) {
-                productImage.setImage(new Image(is));
-            }
+        try (InputStream is = getClass().getResourceAsStream(
+                "/org/example/demo/images/logo.jpg")) {
+            if (is != null) productImage.setImage(new Image(is));
         } catch (IOException ignored) {}
     }
 
     /**
-     * Appelle GET http://localhost:7001/plats/{id}/options
+     * Calls API GET /plats/{id}/options to retrieve available options
      */
     private void loadOptionsFromApi(int platId) {
-        if (optionsContainer == null) {
-            System.err.println("optionsContainer non injecté dans le FXML.");
-            return;
-        }
+        if (optionsContainer == null) return;
 
-        // Nettoyer (mais garder le titre)
+        // Reset container (keep title)
         optionsContainer.getChildren().setAll(optionsTitleLabel);
         optionCheckBoxes.clear();
 
@@ -123,56 +131,48 @@ public class ProductDetailsController {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
-            int status = conn.getResponseCode();
-            if (status != HttpURLConnection.HTTP_OK) {
-                System.err.println("Erreur API /plats/" + platId + "/options : HTTP " + status);
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 return;
             }
 
             try (InputStream is = conn.getInputStream();
-                 InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                 InputStreamReader reader = new InputStreamReader(
+                         is, StandardCharsets.UTF_8)) {
 
                 Gson gson = new GsonBuilder().create();
                 OptionDto[] options = gson.fromJson(reader, OptionDto[].class);
 
-                if (options == null || options.length == 0) {
-                    System.out.println("Aucune option pour ce plat.");
-                    return;
+                if (options != null && options.length > 0) {
+                    displayOptions(options);
                 }
-
-                displayOptions(options);
             }
 
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'appel API /plats/" + platId + "/options :");
-            e.printStackTrace();
+            System.err.println("Error loading options: " + e.getMessage());
         } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
+            if (conn != null) conn.disconnect();
         }
     }
 
     /**
-     * Crée des groupes + cases à cocher à partir des OptionDto.
+     * Builds the options UI (CheckBoxes grouped by type)
      */
     private void displayOptions(OptionDto[] options) {
-        // Grouper par type (SPICE_LEVEL, SIDE, EXTRA ...)
         Map<String, VBox> groups = new LinkedHashMap<>();
 
         for (OptionDto opt : options) {
             if (opt == null) continue;
 
-            String typeKey = (opt.type != null) ? opt.type : "AUTRE";
-            VBox groupBox = groups.get(typeKey);
+            String typeKey = (opt.type != null) ? opt.type : "OTHER";
 
+            VBox groupBox = groups.get(typeKey);
             if (groupBox == null) {
                 groupBox = new VBox(5);
                 groupBox.setAlignment(Pos.CENTER_LEFT);
-                groupBox.setPadding(new Insets(5, 0, 0, 0));
+                groupBox.setPadding(new Insets(10, 0, 5, 0));
 
                 Label groupLabel = new Label(getLabelForType(typeKey));
-                groupLabel.setStyle("-fx-font-weight: bold;");
+                groupLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
 
                 groupBox.getChildren().add(groupLabel);
                 groups.put(typeKey, groupBox);
@@ -186,32 +186,26 @@ public class ProductDetailsController {
             groupBox.getChildren().add(cb);
             optionCheckBoxes.add(cb);
         }
-
-        // Mettre à jour une première fois le prix
-        updateDisplayedPrice();
     }
 
     private String getLabelForType(String typeKey) {
-        if (typeKey == null) return "Options";
-
         return switch (typeKey) {
-            case "SPICE_LEVEL" -> "Niveau de piment :";
-            case "SIDE"        -> "Accompagnements :";
-            case "EXTRA"       -> "Suppléments :";
-            default            -> "Options :";
+            case "SPICE_LEVEL" -> "Spice level:";
+            case "SIDE"        -> "Side dishes:";
+            case "EXTRA"       -> "Extras:";
+            default            -> "Other options:";
         };
     }
 
     private String formatOptionLabel(OptionDto opt) {
         if (opt.prix > 0.0) {
             return String.format("%s (+%.2f €)", opt.libelle, opt.prix);
-        } else {
-            return opt.libelle;
         }
+        return opt.libelle;
     }
 
     /**
-     * Recalcule le prix unitaire affiché en fonction des options cochées.
+     * Recalculates displayed unit price (Base price + selected options)
      */
     private void updateDisplayedPrice() {
         double extra = computeSelectedOptionsExtra();
@@ -230,13 +224,12 @@ public class ProductDetailsController {
         return extra;
     }
 
-    // ==================== Gestion quantité ====================
+    // ==================== Quantity Management ====================
 
     @FXML
     private void increaseQuantity() {
         quantity++;
         quantityLabel.setText(String.valueOf(quantity));
-        updateDisplayedPrice();
     }
 
     @FXML
@@ -244,23 +237,18 @@ public class ProductDetailsController {
         if (quantity > 1) {
             quantity--;
             quantityLabel.setText(String.valueOf(quantity));
-            updateDisplayedPrice();
         }
     }
 
-    // ==================== Boutons bas ====================
+    // ==================== Bottom Actions ====================
 
     @FXML
     private void addToCart() {
-        if (product == null) {
-            System.err.println("Produit non défini dans ProductDetailsController.");
-            return;
-        }
+        if (product == null) return;
 
         double extra = computeSelectedOptionsExtra();
         double unitPrice = basePrice + extra;
 
-        // Construire la description finale avec les options sélectionnées
         List<String> selectedLabels = new ArrayList<>();
         for (CheckBox cb : optionCheckBoxes) {
             if (cb.isSelected()) {
@@ -271,11 +259,10 @@ public class ProductDetailsController {
 
         String finalDescription = product.getDescription();
         if (!selectedLabels.isEmpty()) {
-            String optionsText = "Options : " + String.join(", ", selectedLabels);
-            finalDescription = finalDescription + "\n" + optionsText;
+            String optionsText = "\n[Options: " + String.join(", ", selectedLabels) + "]";
+            finalDescription = (finalDescription == null ? "" : finalDescription) + optionsText;
         }
 
-        // Nouveau Product avec prix ajusté et description enrichie
         Product pWithOptions = new Product(
                 product.getId(),
                 product.getName(),
@@ -285,8 +272,9 @@ public class ProductDetailsController {
                 product.getCategory()
         );
 
-        // ✅ utilisation de ton Cart : une seule ligne
         Cart.getInstance().addItem(pWithOptions, quantity);
+
+        System.out.println("Added to cart: " + pWithOptions.getName() + " x" + quantity);
 
         closeWindow();
     }
