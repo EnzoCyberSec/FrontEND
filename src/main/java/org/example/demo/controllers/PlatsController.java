@@ -157,9 +157,7 @@ public class PlatsController {
 
                 if (plats != null) {
                     for (PlatDto plat : plats) {
-                        if (plat.disponible) {
-                            grid.getChildren().add(createPlatCard(plat));
-                        }
+                        grid.getChildren().add(createPlatCard(plat));
                     }
                 }
             }
@@ -224,12 +222,13 @@ public class PlatsController {
         String name = (plat != null && plat.nom != null) ? plat.nom : "Plat";
         double price = (plat != null) ? plat.prix : 0.0;
 
-        // Vraie description BDD
         String description = (plat != null && plat.description != null && !plat.description.isBlank())
                 ? plat.description
                 : "Un plat savoureux et copieux.";
 
         int id = (plat != null) ? plat.idPlat : 0;
+
+        boolean isAvailable = (plat != null) ? plat.disponible : false;
 
         Product product = new Product(
                 id,
@@ -237,7 +236,8 @@ public class PlatsController {
                 description,
                 price,
                 imagePath,
-                "Plat"
+                "Plat",
+                isAvailable
         );
 
         SceneManager.getInstance().showProductDetails(product);

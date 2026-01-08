@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import org.example.demo.managers.SceneManager;
 import org.example.demo.models.Cart;
 import org.example.demo.models.CartItem;
+import org.example.demo.models.Option; // Import ajouté pour les options
 import org.example.demo.services.OrderApiService;
 
 import java.io.IOException;
@@ -79,7 +80,8 @@ public class CartController {
         VBox infoBox = new VBox(5);
 
         Label nameLabel = new Label(item.getProduct().getName());
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        // CORRECTION ICI : Ajout de -fx-text-fill: black; pour assurer la visibilité
+        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: black;");
 
         Label priceLabel = new Label(
                 String.format("%.2f € / unit", item.getProduct().getPrice())
@@ -88,13 +90,23 @@ public class CartController {
 
         infoBox.getChildren().addAll(nameLabel, priceLabel);
 
+        // --- Affichage des options ---
+        if (item.getOptions() != null && !item.getOptions().isEmpty()) {
+            for (Option opt : item.getOptions()) {
+                Label optLabel = new Label(" + " + opt.getLibelle());
+                optLabel.setStyle("-fx-text-fill: #555; -fx-font-size: 11px; -fx-font-style: italic;");
+                infoBox.getChildren().add(optLabel);
+            }
+        }
+
         // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // --- 3. Quantity ---
         Label qtyLabel = new Label("x" + item.getQuantity());
-        qtyLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        // Ajout de la couleur noire ici aussi par sécurité
+        qtyLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: black;");
 
         // --- 4. Subtotal ---
         Label subTotalLabel = new Label(String.format("%.2f €", item.getSubtotal()));

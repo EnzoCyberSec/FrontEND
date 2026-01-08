@@ -83,7 +83,8 @@
                                -fx-padding: 10 30;
                                -fx-cursor: hand;"/>
 
-                <Button text="Add to cart"
+                <Button fx:id="addToCartBtn"
+                        text="Add to cart"
                         onAction="#addToCart"
                         style="-fx-background-color: #e46725;
                                -fx-text-fill: white;

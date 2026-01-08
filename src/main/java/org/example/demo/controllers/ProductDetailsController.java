@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button; // AJOUT
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -12,7 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.demo.models.Cart;
-import org.example.demo.models.Option; // On utilise notre nouvelle classe
+import org.example.demo.models.Option;
 import org.example.demo.models.Product;
 
 import java.io.InputStream;
@@ -31,6 +32,9 @@ public class ProductDetailsController {
     @FXML private Label productDescription;
     @FXML private Label quantityLabel;
     @FXML private VBox optionsContainer;
+
+    // AJOUT : Référence au bouton d'ajout (nécessite fx:id="addToCartBtn" dans le FXML)
+    @FXML private Button addToCartBtn;
 
     private Product product;
     private int quantity = 1;
@@ -55,7 +59,30 @@ public class ProductDetailsController {
         this.quantity = 1;
         quantityLabel.setText("1");
         productName.setText(product.getName());
-        productPrice.setText(String.format("%.2f €", basePrice));
+
+        // --- LOGIQUE DE DISPONIBILITÉ (AJOUT) ---
+        if (!product.isAvailable()) {
+            // Cas INDISPONIBLE
+            productPrice.setText("Unavailable");
+            // Style rouge pour alerter l'utilisateur
+            productPrice.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: red;");
+
+            if (addToCartBtn != null) {
+                addToCartBtn.setDisable(true); // Désactive le bouton
+                addToCartBtn.setText("Out of stock");
+            }
+        } else {
+            // Cas DISPONIBLE
+            productPrice.setText(String.format("%.2f €", basePrice));
+            // On restaure le style normal (orange/défaut)
+            productPrice.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #e46725;");
+
+            if (addToCartBtn != null) {
+                addToCartBtn.setDisable(false); // Active le bouton
+                addToCartBtn.setText("Add to cart");
+            }
+        }
+        // ----------------------------------------
 
         if (product.getDescription() != null && !product.getDescription().isEmpty()) {
             productDescription.setText(product.getDescription());
@@ -75,7 +102,12 @@ public class ProductDetailsController {
         if (isExcluded) {
             if (optionsContainer != null) optionsContainer.getChildren().clear();
         } else {
-            loadOptionsFromApi(product.getId());
+            // On ne charge les options que si le produit est disponible (optionnel, mais plus propre)
+            if (product.isAvailable()) {
+                loadOptionsFromApi(product.getId());
+            } else if (optionsContainer != null) {
+                optionsContainer.getChildren().clear();
+            }
         }
     }
 
@@ -200,7 +232,8 @@ public class ProductDetailsController {
 
     @FXML
     private void addToCart() {
-        if (product == null) return;
+        // AJOUT : Sécurité supplémentaire
+        if (product == null || !product.isAvailable()) return;
 
         double extra = computeSelectedOptionsExtra();
         double unitPrice = basePrice + extra;
@@ -224,13 +257,16 @@ public class ProductDetailsController {
             finalDescription = (finalDescription == null ? "" : finalDescription) + optionsText;
         }
 
+        // On crée un clone pour le panier
+        // Note: on réutilise product.getCategory() et autres
         Product pWithOptions = new Product(
                 product.getId(),
                 product.getName(),
                 finalDescription,
                 unitPrice,
                 product.getImageUrl(),
-                product.getCategory()
+                product.getCategory(),
+                true // Dans le panier, l'article est considéré comme "validé/disponible" à l'instant T
         );
 
         // 3. IMPORTANT : On passe la liste des options au panier
