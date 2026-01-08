@@ -225,11 +225,6 @@ public class EntreeController {
     }
 
     @FXML
-    public void goToSnacks() throws IOException {
-        SceneManager.getInstance().switchScene("petite-faim");
-    }
-
-    @FXML
     public void goToDrinks() throws IOException {
         SceneManager.getInstance().switchScene("boissons");
     }

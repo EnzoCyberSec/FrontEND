@@ -50,12 +50,11 @@ public class MenuWizardController {
                 steps.add("Boisson");
                 steps.add("Dessert");
                 break;
-            case "Menu Maxi": // Plat + Boisson + Dessert + Snack
+            case "Menu Maxi": // Plat + Boisson + Dessert
                 this.menuBasePrice = 18.50;
                 steps.add("Plat");
                 steps.add("Boisson");
                 steps.add("Dessert");
-                steps.add("Snack");
                 break;
         }
 
@@ -170,12 +169,6 @@ public class MenuWizardController {
             list.add(new Product(21, "Muffin Choco", "", 0, "", "Dessert"));
             list.add(new Product(22, "Cookie", "", 0, "", "Dessert"));
             list.add(new Product(23, "Fruits", "", 0, "", "Dessert"));
-        }
-        else if (category.equals("Snack")) {
-            list.add(new Product(30, "Frites Moyennes", "", 0, "", "Snack"));
-            list.add(new Product(31, "Potatoes", "", 0, "", "Snack"));
-            list.add(new Product(32, "Nuggets x4", "", 0, "", "Snack"));
-            list.add(new Product(33, "Salade Side", "", 0, "", "Snack"));
         }
 
         return list;

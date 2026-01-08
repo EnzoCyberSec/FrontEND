@@ -76,14 +76,6 @@
                                 </graphic>
                             </Button>
 
-                            <Button text="Snacks" styleClass="catBtn" onAction="#goToSnacks">
-                                <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
-                                        <image><Image url="@../images/test.jpg"/></image>
-                                    </ImageView>
-                                </graphic>
-                            </Button>
-
                             <Button text="Boissons" styleClass="catBtn" onAction="#goToDrinks">
                                 <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">

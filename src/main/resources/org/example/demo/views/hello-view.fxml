@@ -20,10 +20,12 @@
                 </image>
             </ImageView>
 
-            <Button text="Toucher pour commencer" styleClass="btn-start"
+            <Button text="Tap to Start"
+                    styleClass="btn-start"
                     onAction="#startApp"/>
 
-            <Button text="Connexion" styleClass="btn-connexion"
+            <Button text="Login"
+                    styleClass="btn-connexion"
                     onAction="#login"/>
         </VBox>
     </center>

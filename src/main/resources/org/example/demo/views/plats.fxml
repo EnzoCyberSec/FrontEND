@@ -16,6 +16,7 @@
             fx:controller="org.example.demo.controllers.PlatsController"
             styleClass="root">
 
+    <!-- ===================== TOP ===================== -->
     <top>
         <VBox style="-fx-background-color: transparent; -fx-padding: 10 20;">
             <HBox alignment="CENTER_LEFT" spacing="20">
@@ -26,26 +27,65 @@
                 </ImageView>
             </HBox>
             <HBox alignment="CENTER">
-                <Label fx:id="titleLabel" text="Plats" styleClass="pageTitle"/>
+                <Label text="Our Main Dishes" styleClass="pageTitle"/>
             </HBox>
         </VBox>
     </top>
 
+    <!-- ===================== SIDEBAR ===================== -->
     <left>
-        <VBox>
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+        <VBox spacing="0" style="-fx-background-color: transparent; -fx-padding: 0 0 0 16;">
+            <ScrollPane fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent; -fx-background: transparent;">
                 <content>
-                    <StackPane>
-                        <VBox spacing="10" style="-fx-padding: 10 10 10 10;">
+                    <StackPane styleClass="sidebarWrapper">
+                        <VBox styleClass="sidebar" spacing="10">
 
-                            <Button text="Menus"       styleClass="catBtn" onAction="#goToMenus"/>
-                            <Button text="Entrées"     styleClass="catBtn" onAction="#goToStarters"/>
-                            <Button text="Plats"       styleClass="catBtn" onAction="#goToMainDishes"/>
-                            <Button text="Desserts"    styleClass="catBtn" onAction="#goToDesserts"/>
-                            <Button text="Petite faim" styleClass="catBtn" onAction="#goToSnacks"/>
-                            <Button text="Boissons"    styleClass="catBtn" onAction="#goToDrinks"/>
+                            <Label text="Categories" styleClass="sidebarTitle"/>
 
-                            <Button styleClass="profileBtn">
+                            <Button text="Menus" styleClass="catBtn" onAction="#goToMenus">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/test.jpg"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Starters" styleClass="catBtn" onAction="#goToStarters">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/test.jpg"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Main Dishes" styleClass="catBtn" onAction="#goToMainDishes">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/test.jpg"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Desserts" styleClass="catBtn" onAction="#goToDesserts">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/test.jpg"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Drinks" styleClass="catBtn" onAction="#goToDrinks">
                                 <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                         <image>
@@ -56,8 +96,9 @@
                             </Button>
 
                             <VBox style="-fx-padding: 20 0 0 0;">
-                                <Button text="← Retour" styleClass="catBtn" onAction="#goBack"/>
+                                <Button text="← Back" styleClass="catBtn" onAction="#goBack"/>
                             </VBox>
+
                         </VBox>
                     </StackPane>
                 </content>
@@ -65,6 +106,7 @@
         </VBox>
     </left>
 
+    <!-- ===================== CENTER ===================== -->
     <center>
         <VBox styleClass="content">
             <ScrollPane fitToWidth="true"
@@ -72,7 +114,6 @@
                         vbarPolicy="AS_NEEDED"
                         style="-fx-background-color: transparent; -fx-background: transparent;">
                 <content>
-                    <!-- TilePane VIDE : rempli uniquement par l'API -->
                     <TilePane fx:id="grid"
                               prefColumns="3"
                               styleClass="grid"
@@ -82,19 +123,22 @@
         </VBox>
     </center>
 
-
+    <!-- ===================== BOTTOM ===================== -->
     <bottom>
         <HBox alignment="CENTER" style="-fx-padding: 0 0 24 0;">
             <StackPane styleClass="bottomWrapper">
                 <BorderPane styleClass="bottomBar">
                     <center>
-                        <Button text="🛒 PANIER" styleClass="cartBtn" onAction="#goToCart"/>
+                        <Button text="🛒 CART" styleClass="cartBtn" onAction="#goToCart"/>
                     </center>
                     <right>
-                        <Label fx:id="totalLabel" text="Total: 0.00 €" styleClass="totalText"/>
+                        <Label fx:id="totalLabel"
+                               text="Total: €0.00"
+                               styleClass="totalText"/>
                     </right>
                 </BorderPane>
             </StackPane>
         </HBox>
     </bottom>
+
 </BorderPane>
