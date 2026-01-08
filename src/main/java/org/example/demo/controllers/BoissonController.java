@@ -43,10 +43,9 @@ public class BoissonController {
     private static final String BASE = "/org/example/demo/images/boissons/";
     private static final String DEFAULT_IMG = BASE + "default.png";
 
-    // ✅ NOMS EXACTS BDD/API -> FICHIERS IMAGES
+    // mapping simple (optionnel) pour les boissons "sans piège"
     private static final Map<String, String> IMG_BY_NAME = Map.of(
             "Homemade iced tea", "Homemadeicedtea.png",
-            "Coca Cola", "Cocacola.png",
             "Mineral water", "Mineralwater.png",
             "Asian beer", "Asianbeer.png",
             "Lychee juice", "Lycheejuice.png"
@@ -63,9 +62,38 @@ public class BoissonController {
         if (totalLabel != null) totalLabel.setText(String.format("Total: %.2f €", total));
     }
 
+    private String firstExisting(String... fileNames) {
+        for (String f : fileNames) {
+            String path = BASE + f;
+            if (getClass().getResource(path) != null) return path;
+        }
+        return DEFAULT_IMG;
+    }
+
+    // "Coca Cola" / "Coca-Cola" / "coca cola" -> "cocacola"
+    private String keyOf(String s) {
+        if (s == null) return "";
+        return s.toLowerCase().replaceAll("[^a-z]", "");
+    }
+
     private String imagePathFor(BoissonDto b) {
         if (b == null || b.nom == null) return DEFAULT_IMG;
 
+        String key = keyOf(b.nom);
+
+        // ✅ Coca ultra robuste (nom BDD + nom fichier)
+        if (key.contains("cocacola")) {
+            return firstExisting(
+                    "CocaCola.png",     // ✅ ton fichier actuel (en premier)
+                    "Coca-Cola.png",
+                    "Cocacola.png",
+                    "Coca-cola.png",
+                    "cocacola.png",
+                    "coca-cola.png"
+            );
+        }
+
+        // autres boissons: mapping normal
         String file = IMG_BY_NAME.get(b.nom);
         if (file == null) return DEFAULT_IMG;
 
@@ -156,7 +184,6 @@ public class BoissonController {
         card.getChildren().addAll(imgView, nameLbl, priceLbl);
         btn.setGraphic(card);
 
-        // stocke pour la popup
         btn.setUserData(new Object[]{imgPath, b});
         btn.setOnAction(this::onSelectMenu);
 

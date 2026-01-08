@@ -104,10 +104,9 @@ public class CartController {
         refreshCartDisplay();
     }
 
+
     @FXML
     public void checkout() throws IOException {
-        if (!Cart.getInstance().getItems().isEmpty()) {
-            SceneManager.getInstance().switchScene("payment");
-        }
+            SceneManager.getInstance().switchScene("confirmation");
     }
 }

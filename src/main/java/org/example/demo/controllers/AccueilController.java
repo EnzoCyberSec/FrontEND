@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -21,14 +22,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 
 public class AccueilController {
 
     @FXML private Label totalLabel;
     @FXML private TilePane grid;
-
-    // --- DTOs pour l'API ---
 
     private static class CategorieDto {
         int idCategorie;
@@ -44,44 +44,77 @@ public class AccueilController {
         CategorieDto categorie;
     }
 
+    // ---------- Image folders + fallback ----------
+    private static final String BASE_ENTREES  = "/org/example/demo/images/entrees/";
+    private static final String BASE_PLATS    = "/org/example/demo/images/plats/";
+    private static final String BASE_BOISSONS = "/org/example/demo/images/boissons/";
+    private static final String BASE_DESSERTS = "/org/example/demo/images/desserts/";
+
+    private static final String DEFAULT_ENTREES  = BASE_ENTREES  + "default.png";
+    private static final String DEFAULT_PLATS    = BASE_PLATS    + "default.png";
+    private static final String DEFAULT_BOISSONS = BASE_BOISSONS + "default.png";
+    private static final String DEFAULT_DESSERTS = BASE_DESSERTS + "default.png";
+
+    // ---------- Exact BDD name -> image file ----------
+    private static final Map<String, String> IMG_ENTREES = Map.of(
+            "Pork spring rolls", "Porkspringrolls.png",
+            "Vegetable spring rolls", "Vegetablespringrolls.png",
+            "Miso soup", "Misosoup.png",
+            "Chicken gyoza", "Chickengyoza.png",
+            "Wakame salad", "Wakamesalad.png"
+    );
+
+    private static final Map<String, String> IMG_PLATS = Map.of(
+            "Chicken pad thai", "Chickenpadthai.png",
+            "Beef lok lak", "Beefloklak.png",
+            "Red curry chicken", "Redcurrychicken.png",
+            "Cantonese rice", "Cantoneserice.png",
+            "Vegetable noodles", "Vegetablenoodles.png"
+    );
+
+    private static final Map<String, String> IMG_BOISSONS = Map.of(
+            "Homemade iced tea", "Homemadeicedtea.png",
+            "Coca-Cola", "CocaCola.png",     // ✅ fichier actuel
+            "Coca Cola", "CocaCola.png",     // ✅ si ta BDD renvoie sans tiret
+            "Mineral water", "Mineralwater.png",
+            "Asian beer", "Asianbeer.png",
+            "Lychee juice", "Lycheejuice.png"
+    );
+
+    private static final Map<String, String> IMG_DESSERTS = Map.of(
+            "Coconut pearls", "Coconutpearls.png",
+            "Ice cream mochi", "Icecreammochi.png",
+            "Fried banana", "Friedbanana.png",
+            "Lychees in syrup", "Lycheesinsyrup.png",
+            "Fresh pineapple", "Freshpineapple.png"
+    );
+
     @FXML
     public void initialize() {
-        loadRandomProductsFromApi();   // charge des produits random
+        loadRandomProductsFromApi();
         updateTotal();
     }
 
     private void updateTotal() {
         double total = Cart.getInstance().getTotal();
-        if (totalLabel != null) {
-            totalLabel.setText(String.format("Total: %.2f €", total));
-        }
+        if (totalLabel != null) totalLabel.setText(String.format("Total: %.2f €", total));
     }
 
-    // --- Chargement de produits random ---
-
     private void loadRandomProductsFromApi() {
-        if (grid == null) {
-            System.err.println("TilePane 'grid' non injecté (fx:id manquant dans le FXML ?)");
-            return;
-        }
-
+        if (grid == null) return;
         grid.getChildren().clear();
 
-        // 1 = Entrées, 2 = Plats, 3 = Boissons, 4 = Desserts
         PlatDto entree  = fetchRandomPlatFromCategory(1);
         PlatDto plat    = fetchRandomPlatFromCategory(2);
         PlatDto boisson = fetchRandomPlatFromCategory(3);
         PlatDto dessert = fetchRandomPlatFromCategory(4);
 
-        if (entree  != null)  grid.getChildren().add(createProductCard(entree));
-        if (plat    != null)  grid.getChildren().add(createProductCard(plat));
-        if (boisson != null)  grid.getChildren().add(createProductCard(boisson));
-        if (dessert != null)  grid.getChildren().add(createProductCard(dessert));
+        if (entree  != null) grid.getChildren().add(createProductCard(entree));
+        if (plat    != null) grid.getChildren().add(createProductCard(plat));
+        if (boisson != null) grid.getChildren().add(createProductCard(boisson));
+        if (dessert != null) grid.getChildren().add(createProductCard(dessert));
     }
 
-    /**
-     * Appelle /categories/{idCategorie}/plats, puis retourne un plat aléatoire.
-     */
     private PlatDto fetchRandomPlatFromCategory(int idCategorie) {
         HttpURLConnection conn = null;
         try {
@@ -90,30 +123,19 @@ public class AccueilController {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
-            int status = conn.getResponseCode();
-            if (status != HttpURLConnection.HTTP_OK) {
-                System.err.println("Erreur API /categories/" + idCategorie + "/plats : HTTP " + status);
-                return null;
-            }
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) return null;
 
             try (InputStream is = conn.getInputStream();
                  InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 
                 Gson gson = new GsonBuilder().create();
                 PlatDto[] plats = gson.fromJson(reader, PlatDto[].class);
+                if (plats == null || plats.length == 0) return null;
 
-                if (plats == null || plats.length == 0) {
-                    System.out.println("Aucun produit dans la catégorie " + idCategorie);
-                    return null;
-                }
-
-                // Retourne un plat aléatoire dans cette catégorie
                 int index = (int) (Math.random() * plats.length);
                 return plats[index];
             }
-
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'appel API /categories/" + idCategorie + "/plats :");
             e.printStackTrace();
             return null;
         } finally {
@@ -121,9 +143,92 @@ public class AccueilController {
         }
     }
 
-    /**
-     * Crée une carte (StackPane) pour un produit (image + nom + prix).
-     */
+    // ---------- image selection ----------
+    private String imagePathFor(PlatDto p) {
+        int cat = (p != null && p.categorie != null) ? p.categorie.idCategorie : 0;
+        String name = (p != null) ? p.nom : null;
+
+        if (cat == 1) return pickFromMap(BASE_ENTREES, DEFAULT_ENTREES, IMG_ENTREES, name);
+        if (cat == 2) return pickFromMap(BASE_PLATS, DEFAULT_PLATS, IMG_PLATS, name);
+        if (cat == 3) return pickFromMap(BASE_BOISSONS, DEFAULT_BOISSONS, IMG_BOISSONS, name);
+        if (cat == 4) return pickFromMap(BASE_DESSERTS, DEFAULT_DESSERTS, IMG_DESSERTS, name);
+
+        return DEFAULT_PLATS;
+    }
+
+    // "Coca Cola" / "Coca-Cola" / "coca cola" -> "cocacola"
+    private String keyOf(String s) {
+        if (s == null) return "";
+        return s.toLowerCase().replaceAll("[^a-z]", "");
+    }
+
+    private String pickFromMap(String base, String fallback, Map<String, String> map, String name) {
+        if (name == null) return fallback;
+
+        // 1) mapping direct
+        String file = map.get(name);
+        if (file != null) {
+            String path = base + file;
+            if (getClass().getResource(path) != null) return path;
+        }
+
+        // 2) ✅ patch spécial "Ice cream mochi" (desserts)
+        if ("Ice cream mochi".equals(name) && base.equals(BASE_DESSERTS)) {
+            String[] candidates = {
+                    "Icecreammochi.png",   // 1 m
+                    "Icecreammmochi.png",  // 2 m
+                    "Icecreammmochi.png"   // 3 m
+            };
+            for (String c : candidates) {
+                String p = base + c;
+                if (getClass().getResource(p) != null) return p;
+            }
+        }
+
+        // 3) ✅ patch spécial COCA (boissons) - fichier CocaCola.png
+        if (base.equals(BASE_BOISSONS)) {
+            String key = keyOf(name);
+            if (key.contains("cocacola")) {
+                String[] candidates = {
+                        "CocaCola.png",     // ✅ ton fichier actuel
+                        "Coca-Cola.png",
+                        "Cocacola.png",
+                        "Coca-cola.png",
+                        "cocacola.png",
+                        "coca-cola.png"
+                };
+                for (String c : candidates) {
+                    String p = base + c;
+                    if (getClass().getResource(p) != null) return p;
+                }
+            }
+        }
+
+        return fallback;
+    }
+
+    private ImageView squareImage(String resourcePath, double size) {
+        ImageView iv = new ImageView();
+        iv.getStyleClass().add("productImg");
+        iv.setFitWidth(size);
+        iv.setFitHeight(size);
+        iv.setPreserveRatio(true);
+
+        Image img = null;
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            img = new Image(Objects.requireNonNull(is));
+        } catch (Exception ignored) {}
+
+        if (img != null) {
+            iv.setImage(img);
+            double w = img.getWidth(), h = img.getHeight();
+            double side = Math.min(w, h);
+            iv.setViewport(new Rectangle2D((w - side) / 2, (h - side) / 2, side, side));
+        }
+
+        return iv;
+    }
+
     private StackPane createProductCard(PlatDto plat) {
         StackPane root = new StackPane();
 
@@ -133,68 +238,52 @@ public class AccueilController {
         VBox vbox = new VBox();
         vbox.getStyleClass().add("productCard");
 
-        // Image
-        ImageView imgView;
-        try (InputStream imgStream = getClass()
-                .getResourceAsStream("/org/example/demo/images/logo.jpg")) {
-            Image img = new Image(Objects.requireNonNull(imgStream));
-            imgView = new ImageView(img);
-        } catch (Exception e) {
-            imgView = new ImageView();
-        }
-        imgView.getStyleClass().add("productImg");
-        imgView.setFitHeight(90);
-        imgView.setFitWidth(120);
-        imgView.setPreserveRatio(true);
+        String imagePath = imagePathFor(plat);
+        ImageView imgView = squareImage(imagePath, 100);
 
-        // Nom
         String nom = (plat.nom != null) ? plat.nom : "Produit";
         Label nameLbl = new Label(nom);
         nameLbl.getStyleClass().add("productName");
 
-        // Prix
-        double prix = plat.prix;
-        Label priceLbl = new Label(String.format("%.2f €", prix));
+        Label priceLbl = new Label(String.format("%.2f €", plat.prix));
         priceLbl.getStyleClass().add("productPrice");
 
         vbox.getChildren().addAll(imgView, nameLbl, priceLbl);
 
-        btn.setUserData(plat);
+        btn.setUserData(new Object[]{plat, imagePath});
         btn.setGraphic(vbox);
-
-        // Clic = ouvrir la popup détail
         btn.setOnAction(this::onSelectMenu);
 
         root.getChildren().add(btn);
         return root;
     }
 
-    // --- Clic sur une carte => popup ---
-
     @FXML
     public void onSelectMenu(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        PlatDto plat = (PlatDto) clickedButton.getUserData();
 
-        String imageUrl = "/org/example/demo/images/logo.jpg";
+        PlatDto plat = null;
+        String imageUrl = DEFAULT_PLATS;
+
+        try {
+            Object[] data = (Object[]) clickedButton.getUserData();
+            plat = (PlatDto) data[0];
+            imageUrl = (String) data[1];
+        } catch (Exception ignored) {}
 
         String name = (plat != null && plat.nom != null) ? plat.nom : "Produit";
         double price = (plat != null) ? plat.prix : 0.0;
 
-        String description;
-        if (plat != null && plat.description != null && !plat.description.isBlank()) {
-            description = plat.description;
-        } else {
-            description = "Un délicieux " + name + " préparé avec soin.";
-        }
+        String description = (plat != null && plat.description != null && !plat.description.isBlank())
+                ? plat.description
+                : "Un délicieux " + name + " préparé avec soin.";
 
         String categoryLabel = "Produit";
-        if (plat != null && plat.categorie != null) {
-            if (plat.categorie.idCategorie == 1) categoryLabel = "Entrée";
-            else if (plat.categorie.idCategorie == 2) categoryLabel = "Plat";
-            else if (plat.categorie.idCategorie == 3) categoryLabel = "Boisson";
-            else if (plat.categorie.idCategorie == 4) categoryLabel = "Dessert";
-        }
+        int catId = (plat != null && plat.categorie != null) ? plat.categorie.idCategorie : 0;
+        if (catId == 1) categoryLabel = "Entrée";
+        else if (catId == 2) categoryLabel = "Plat";
+        else if (catId == 3) categoryLabel = "Boisson";
+        else if (catId == 4) categoryLabel = "Dessert";
 
         int id = (plat != null) ? plat.idPlat : 0;
 
@@ -211,6 +300,7 @@ public class AccueilController {
         updateTotal();
     }
 
+    // Navigation
     @FXML public void goBack() throws IOException { SceneManager.getInstance().switchScene("hello-view"); }
     @FXML public void goToCart() throws IOException { SceneManager.getInstance().switchScene("cart"); }
     @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }

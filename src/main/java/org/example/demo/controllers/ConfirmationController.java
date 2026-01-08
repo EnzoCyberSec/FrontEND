@@ -1,32 +1,21 @@
 package org.example.demo.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.layout.BorderPane;
+import org.example.demo.managers.SceneManager;
 
 import java.io.IOException;
 
 public class ConfirmationController {
 
     @FXML
-    private BorderPane root;
-
-    @FXML
     public void goHome() throws IOException {
-        loadPage("/org/example/demo/views/menu.fxml");
+        // Home = accueil (ou change si tu veux autre page)
+        SceneManager.getInstance().switchScene("accueil");
     }
 
     @FXML
     public void newOrder() throws IOException {
-        loadPage("/org/example/demo/views/menu.fxml");
-    }
-
-    private void loadPage(String fxmlPath) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-        Parent content = loader.load();
-
-        BorderPane primaryRoot = (BorderPane) root.getScene().getRoot();
-        primaryRoot.setCenter(content);
+        // comme tu as demandé : retour vers hello-view
+        SceneManager.getInstance().switchScene("hello-view");
     }
 }
