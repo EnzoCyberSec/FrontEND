@@ -59,7 +59,7 @@ public class ConfirmationController {
             orderNumber.setText("Order number: #" + id);
         }
         if (estimatedTime != null) {
-            estimatedTime.setText("Estimated time: " + time);
+            estimatedTime.setText("Please wait, your order is being prepared");
         }
     }
 
