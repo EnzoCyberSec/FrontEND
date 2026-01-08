@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.demo.models.Cart;
+import org.example.demo.models.Option; // On utilise notre nouvelle classe
 import org.example.demo.models.Product;
 
 import java.io.InputStream;
@@ -22,9 +23,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-/**
- * Product details popup with dynamic options loaded from the API.
- */
 public class ProductDetailsController {
 
     @FXML private ImageView productImage;
@@ -41,18 +39,9 @@ public class ProductDetailsController {
     private final List<CheckBox> optionCheckBoxes = new ArrayList<>();
     private Label optionsTitleLabel;
 
-    private static class OptionDto {
-        int idOption;
-        String libelle;
-        String type;
-        double prix;
-    }
-
     @FXML
     public void initialize() {
         quantityLabel.setText(String.valueOf(quantity));
-
-        // Add title by default (will be removed later if category is Dessert/Drink)
         if (optionsContainer != null) {
             optionsTitleLabel = new Label("Customize your order:");
             optionsTitleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 0 0 10 0;");
@@ -60,16 +49,11 @@ public class ProductDetailsController {
         }
     }
 
-    /**
-     * Main method called by SceneManager to inject the product.
-     */
     public void setProduct(Product product) {
         this.product = product;
         this.basePrice = product.getPrice();
         this.quantity = 1;
         quantityLabel.setText("1");
-
-        // UI text
         productName.setText(product.getName());
         productPrice.setText(String.format("%.2f €", basePrice));
 
@@ -81,13 +65,7 @@ public class ProductDetailsController {
 
         loadImage(product.getImageUrl());
 
-        // =================================================================
-        // LOGIQUE MODIFIÉE ICI :
-        // On ne charge les options que si ce n'est PAS un Dessert ou une Boisson
-        // =================================================================
-        String category = product.getCategory(); // Ex: "Entrée", "Plat", "Dessert", "Boisson"
-
-        // Vérification insensible à la casse ("Dessert", "desserts", "Boisson", "Drinks"...)
+        String category = product.getCategory();
         boolean isExcluded = category != null && (
                 category.toLowerCase().contains("dessert") ||
                         category.toLowerCase().contains("boisson") ||
@@ -95,13 +73,8 @@ public class ProductDetailsController {
         );
 
         if (isExcluded) {
-            // Si c'est un dessert ou une boisson, on vide le container
-            // pour enlever le titre "Customize your order" ajouté dans initialize()
-            if (optionsContainer != null) {
-                optionsContainer.getChildren().clear();
-            }
+            if (optionsContainer != null) optionsContainer.getChildren().clear();
         } else {
-            // Sinon (Entrées, Plats), on charge les options depuis l'API
             loadOptionsFromApi(product.getId());
         }
     }
@@ -110,17 +83,10 @@ public class ProductDetailsController {
         try {
             if (url != null && !url.isBlank()) {
                 InputStream is = getClass().getResourceAsStream(url);
-                if (is != null) {
-                    productImage.setImage(new Image(is));
-                } else {
-                    loadDefaultImage();
-                }
-            } else {
-                loadDefaultImage();
-            }
-        } catch (Exception e) {
-            loadDefaultImage();
-        }
+                if (is != null) productImage.setImage(new Image(is));
+                else loadDefaultImage();
+            } else loadDefaultImage();
+        } catch (Exception e) { loadDefaultImage(); }
     }
 
     private void loadDefaultImage() {
@@ -131,8 +97,6 @@ public class ProductDetailsController {
 
     private void loadOptionsFromApi(int platId) {
         if (optionsContainer == null) return;
-
-        // Reset container (keep title)
         optionsContainer.getChildren().setAll(optionsTitleLabel);
         optionCheckBoxes.clear();
 
@@ -143,21 +107,17 @@ public class ProductDetailsController {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                return;
-            }
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) return;
 
             try (InputStream is = conn.getInputStream();
                  InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-
                 Gson gson = new GsonBuilder().create();
-                OptionDto[] options = gson.fromJson(reader, OptionDto[].class);
-
+                // On charge directement dans notre modèle Option
+                Option[] options = gson.fromJson(reader, Option[].class);
                 if (options != null && options.length > 0) {
                     displayOptions(options);
                 }
             }
-
         } catch (Exception e) {
             System.err.println("Error loading options: " + e.getMessage());
         } finally {
@@ -165,30 +125,27 @@ public class ProductDetailsController {
         }
     }
 
-    private void displayOptions(OptionDto[] options) {
+    private void displayOptions(Option[] options) {
         Map<String, VBox> groups = new LinkedHashMap<>();
 
-        for (OptionDto opt : options) {
+        for (Option opt : options) {
             if (opt == null) continue;
-
-            String typeKey = (opt.type != null) ? opt.type : "OTHER";
+            String typeKey = (opt.getType() != null) ? opt.getType() : "OTHER";
 
             VBox groupBox = groups.get(typeKey);
             if (groupBox == null) {
                 groupBox = new VBox(5);
                 groupBox.setAlignment(Pos.CENTER_LEFT);
                 groupBox.setPadding(new Insets(10, 0, 5, 0));
-
                 Label groupLabel = new Label(getLabelForType(typeKey));
                 groupLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #555;");
-
                 groupBox.getChildren().add(groupLabel);
                 groups.put(typeKey, groupBox);
                 optionsContainer.getChildren().add(groupBox);
             }
 
             CheckBox cb = new CheckBox(formatOptionLabel(opt));
-            cb.setUserData(opt);
+            cb.setUserData(opt); // IMPORTANT : On stocke l'objet Option
             cb.setOnAction(e -> updateDisplayedPrice());
 
             groupBox.getChildren().add(cb);
@@ -199,17 +156,17 @@ public class ProductDetailsController {
     private String getLabelForType(String typeKey) {
         return switch (typeKey) {
             case "SPICE_LEVEL" -> "Spice level:";
-            case "SIDE"        -> "Side dishes:";
-            case "EXTRA"       -> "Extras:";
-            default            -> "Other options:";
+            case "SIDE" -> "Side dishes:";
+            case "EXTRA" -> "Extras:";
+            default -> "Other options:";
         };
     }
 
-    private String formatOptionLabel(OptionDto opt) {
-        if (opt.prix > 0.0) {
-            return String.format("%s (+%.2f €)", opt.libelle, opt.prix);
+    private String formatOptionLabel(Option opt) {
+        if (opt.getPrix() > 0.0) {
+            return String.format("%s (+%.2f €)", opt.getLibelle(), opt.getPrix());
         }
-        return opt.libelle;
+        return opt.getLibelle();
     }
 
     private void updateDisplayedPrice() {
@@ -222,21 +179,19 @@ public class ProductDetailsController {
         double extra = 0.0;
         for (CheckBox cb : optionCheckBoxes) {
             if (cb.isSelected()) {
-                OptionDto opt = (OptionDto) cb.getUserData();
-                extra += opt.prix;
+                Option opt = (Option) cb.getUserData();
+                extra += opt.getPrix();
             }
         }
         return extra;
     }
 
-    @FXML
-    private void increaseQuantity() {
+    @FXML private void increaseQuantity() {
         quantity++;
         quantityLabel.setText(String.valueOf(quantity));
     }
 
-    @FXML
-    private void decreaseQuantity() {
+    @FXML private void decreaseQuantity() {
         if (quantity > 1) {
             quantity--;
             quantityLabel.setText(String.valueOf(quantity));
@@ -250,14 +205,19 @@ public class ProductDetailsController {
         double extra = computeSelectedOptionsExtra();
         double unitPrice = basePrice + extra;
 
+        List<Option> selectedOptions = new ArrayList<>();
         List<String> selectedLabels = new ArrayList<>();
+
+        // 1. Récupération des options cochées
         for (CheckBox cb : optionCheckBoxes) {
             if (cb.isSelected()) {
-                OptionDto opt = (OptionDto) cb.getUserData();
-                selectedLabels.add(opt.libelle);
+                Option opt = (Option) cb.getUserData();
+                selectedOptions.add(opt);
+                selectedLabels.add(opt.getLibelle());
             }
         }
 
+        // 2. Mise à jour de la description pour l'affichage
         String finalDescription = product.getDescription();
         if (!selectedLabels.isEmpty()) {
             String optionsText = "\n[Options: " + String.join(", ", selectedLabels) + "]";
@@ -273,12 +233,13 @@ public class ProductDetailsController {
                 product.getCategory()
         );
 
-        Cart.getInstance().addItem(pWithOptions, quantity);
+        // 3. IMPORTANT : On passe la liste des options au panier
+        Cart.getInstance().addItem(pWithOptions, quantity, selectedOptions);
+
         closeWindow();
     }
 
-    @FXML
-    private void closeWindow() {
+    @FXML private void closeWindow() {
         Stage stage = (Stage) quantityLabel.getScene().getWindow();
         stage.close();
     }

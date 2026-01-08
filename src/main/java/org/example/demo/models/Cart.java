@@ -18,8 +18,14 @@ public class Cart {
         this.items = new ArrayList<>();
     }
 
+    // AJOUT : Nouvelle méthode supportant les options
+    public void addItem(Product product, int quantity, List<Option> options) {
+        items.add(new CartItem(product, quantity, options));
+    }
+
+    // Méthode de compatibilité (si utilisée ailleurs sans options)
     public void addItem(Product product, int quantity) {
-        items.add(new CartItem(product, quantity));
+        addItem(product, quantity, new ArrayList<>());
     }
 
     public void removeItem(int index) {
