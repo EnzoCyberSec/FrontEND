@@ -204,10 +204,8 @@ public class PlatsController {
         SceneManager.getInstance().switchScene("cart");
     }
 
-    @FXML
-    public void goToMenus() throws IOException {
-        SceneManager.getInstance().switchScene("menu");
-    }
+    @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
+
 
     @FXML
     public void goToStarters() throws IOException {

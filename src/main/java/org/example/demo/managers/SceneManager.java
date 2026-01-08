@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.example.demo.controllers.MenuWizardController;
 import org.example.demo.controllers.ProductDetailsController;
 import org.example.demo.models.Product;
 
@@ -77,33 +76,6 @@ public class SceneManager {
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Erreur Popup Produit : " + e.getMessage());
-        }
-    }
-
-    /**
-     * Ouvre le WIZARD pour composer un menu.
-     */
-    public void showMenuWizard(String menuType) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/views/menu-wizard.fxml"));
-            Parent root = loader.load();
-
-            MenuWizardController controller = loader.getController();
-            controller.startWizard(menuType);
-
-            Stage popupStage = new Stage();
-            popupStage.initOwner(stage);
-            popupStage.initModality(Modality.WINDOW_MODAL);
-            popupStage.initStyle(StageStyle.TRANSPARENT);
-
-            Scene scene = new Scene(root);
-            scene.setFill(null);
-            popupStage.setScene(scene);
-            popupStage.showAndWait();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erreur Wizard Menu : " + e.getMessage());
         }
     }
 

@@ -11,9 +11,10 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root"
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.demo.controllers.MenusController"
+            fx:id="root"
+            fx:controller="org.example.demo.controllers.AccueilController"
             styleClass="root">
 
     <top>
@@ -26,25 +27,22 @@
                 </ImageView>
             </HBox>
             <HBox alignment="CENTER">
-                <Label fx:id="title"
-                       text="Nos Menus"
-                       styleClass="pageTitle"/>
+                <Label fx:id="title" text="Welcome" styleClass="pageTitle"/>
             </HBox>
         </VBox>
     </top>
 
     <left>
-        <VBox spacing="0"
-              style="-fx-background-color: transparent; -fx-padding: 0 0 0 16;">
+        <VBox spacing="0" style="-fx-background-color: transparent; -fx-padding: 0 0 0 16;">
             <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
                         style="-fx-background-color: transparent; -fx-background: transparent;">
                 <content>
                     <StackPane styleClass="sidebarWrapper">
                         <VBox styleClass="sidebar" spacing="10">
 
-                            <Label text="Catégories" styleClass="sidebarTitle"/>
+                            <Label text="Categories" styleClass="sidebarTitle"/>
 
-                            <Button text="Menus" styleClass="catBtn" onAction="#goToMenus">
+                            <Button text="Home" styleClass="catBtn" onAction="#goToAccueil">
                                 <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                         <image><Image url="@../images/test.jpg"/></image>
@@ -52,7 +50,7 @@
                                 </graphic>
                             </Button>
 
-                            <Button text="Entrées" styleClass="catBtn" onAction="#goToStarters">
+                            <Button text="Starters" styleClass="catBtn" onAction="#goToStarters">
                                 <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                         <image><Image url="@../images/test.jpg"/></image>
@@ -60,7 +58,7 @@
                                 </graphic>
                             </Button>
 
-                            <Button text="Plats" styleClass="catBtn" onAction="#goToMainDishes">
+                            <Button text="Main Dishes" styleClass="catBtn" onAction="#goToMainDishes">
                                 <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                         <image><Image url="@../images/test.jpg"/></image>
@@ -76,7 +74,7 @@
                                 </graphic>
                             </Button>
 
-                            <Button text="Boissons" styleClass="catBtn" onAction="#goToDrinks">
+                            <Button text="Drinks" styleClass="catBtn" onAction="#goToDrinks">
                                 <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                         <image><Image url="@../images/test.jpg"/></image>
@@ -85,7 +83,7 @@
                             </Button>
 
                             <VBox style="-fx-padding: 20 0 0 0;">
-                                <Button text="← Retour" styleClass="catBtn" onAction="#goBack"/>
+                                <Button text="← Back" styleClass="catBtn" onAction="#goBack"/>
                             </VBox>
 
                         </VBox>
@@ -103,54 +101,7 @@
                     <TilePane fx:id="grid"
                               prefColumns="3"
                               styleClass="grid"
-                              tileAlignment="TOP_LEFT">
-
-                        <StackPane>
-                            <Button onAction="#onSelectMenuDuo" styleClass="menuCardBtn">
-                                <graphic>
-                                    <VBox styleClass="productCard">
-                                        <ImageView styleClass="productImg" fitHeight="90" fitWidth="120" preserveRatio="true">
-                                            <image><Image url="@../images/logo.jpg"/></image>
-                                        </ImageView>
-                                        <Label text="Menu Duo" styleClass="productName"/>
-                                        <Label text="(Plat + Boisson)" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-                                        <Label text="12.50 €" styleClass="productPrice"/>
-                                    </VBox>
-                                </graphic>
-                            </Button>
-                        </StackPane>
-
-                        <StackPane>
-                            <Button onAction="#onSelectMenuTrio" styleClass="menuCardBtn">
-                                <graphic>
-                                    <VBox styleClass="productCard">
-                                        <ImageView styleClass="productImg" fitHeight="90" fitWidth="120" preserveRatio="true">
-                                            <image><Image url="@../images/logo.jpg"/></image>
-                                        </ImageView>
-                                        <Label text="Menu Trio" styleClass="productName"/>
-                                        <Label text="(Plat + Boisson + Dessert)" style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
-                                        <Label text="15.00 €" styleClass="productPrice"/>
-                                    </VBox>
-                                </graphic>
-                            </Button>
-                        </StackPane>
-
-                        <StackPane>
-                            <Button onAction="#onSelectMenuMaxi" styleClass="menuCardBtn">
-                                <graphic>
-                                    <VBox styleClass="productCard">
-                                        <ImageView styleClass="productImg" fitHeight="90" fitWidth="120" preserveRatio="true">
-                                            <image><Image url="@../images/logo.jpg"/></image>
-                                        </ImageView>
-                                        <Label text="Menu Maxi" styleClass="productName"/>
-                                        <Label text="(+ Snack)" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
-                                        <Label text="18.50 €" styleClass="productPrice"/>
-                                    </VBox>
-                                </graphic>
-                            </Button>
-                        </StackPane>
-
-                    </TilePane>
+                              tileAlignment="TOP_LEFT"/>
                 </content>
             </ScrollPane>
         </VBox>
@@ -161,14 +112,10 @@
             <StackPane styleClass="bottomWrapper">
                 <BorderPane styleClass="bottomBar">
                     <center>
-                        <Button text="🛒 PANIER"
-                                styleClass="cartBtn"
-                                onAction="#goToCart"/>
+                        <Button text="🛒 CART" styleClass="cartBtn" onAction="#goToCart"/>
                     </center>
                     <right>
-                        <Label fx:id="totalLabel"
-                               text="Total: 0.00 €"
-                               styleClass="totalText"/>
+                        <Label fx:id="totalLabel" text="Total: €0.00" styleClass="totalText"/>
                     </right>
                 </BorderPane>
             </StackPane>

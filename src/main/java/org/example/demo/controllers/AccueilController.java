@@ -23,29 +23,30 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-public class BoissonController {
+public class AccueilController {
 
     @FXML private Label totalLabel;
     @FXML private TilePane grid;
 
-    // DTO pour mapper la réponse JSON /categories/{idBoissons}/plats
-    public static class CategorieDto {
-        public int idCategorie;
-        public String nom;
+    // --- DTOs pour l'API ---
+
+    private static class CategorieDto {
+        int idCategorie;
+        String nom;
     }
 
-    public static class BoissonDto {
-        public int idPlat;
-        public String nom;
-        public String description;
-        public double prix;
-        public boolean disponible;
-        public CategorieDto categorie;
+    private static class PlatDto {
+        int idPlat;
+        String nom;
+        String description;
+        double prix;
+        boolean disponible;
+        CategorieDto categorie;
     }
 
     @FXML
     public void initialize() {
-        loadBoissonsFromApi();
+        loadRandomProductsFromApi();   // charge des produits random
         updateTotal();
     }
 
@@ -56,63 +57,74 @@ public class BoissonController {
         }
     }
 
-    /**
-     * Appel à l’API pour récupérer les boissons et remplir le TilePane grid.
-     */
-    private void loadBoissonsFromApi() {
+    // --- Chargement de produits random ---
+
+    private void loadRandomProductsFromApi() {
         if (grid == null) {
-            System.err.println("TilePane 'grid' non injecté (fx:id manquant ou erreur FXML ?)");
+            System.err.println("TilePane 'grid' non injecté (fx:id manquant dans le FXML ?)");
             return;
         }
 
-        // On vide le TilePane pour ne garder que les résultats de l’API
         grid.getChildren().clear();
 
+        // 1 = Entrées, 2 = Plats, 3 = Boissons, 4 = Desserts
+        PlatDto entree  = fetchRandomPlatFromCategory(1);
+        PlatDto plat    = fetchRandomPlatFromCategory(2);
+        PlatDto boisson = fetchRandomPlatFromCategory(3);
+        PlatDto dessert = fetchRandomPlatFromCategory(4);
+
+        if (entree  != null)  grid.getChildren().add(createProductCard(entree));
+        if (plat    != null)  grid.getChildren().add(createProductCard(plat));
+        if (boisson != null)  grid.getChildren().add(createProductCard(boisson));
+        if (dessert != null)  grid.getChildren().add(createProductCard(dessert));
+    }
+
+    /**
+     * Appelle /categories/{idCategorie}/plats, puis retourne un plat aléatoire.
+     */
+    private PlatDto fetchRandomPlatFromCategory(int idCategorie) {
         HttpURLConnection conn = null;
         try {
-            URL url = new URL("http://localhost:7001/categories/3/plats");
-
+            URL url = new URL("http://localhost:7001/categories/" + idCategorie + "/plats");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
             int status = conn.getResponseCode();
             if (status != HttpURLConnection.HTTP_OK) {
-                System.err.println("Erreur API /categories/5/plats : HTTP " + status);
-                return;
+                System.err.println("Erreur API /categories/" + idCategorie + "/plats : HTTP " + status);
+                return null;
             }
 
             try (InputStream is = conn.getInputStream();
                  InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 
                 Gson gson = new GsonBuilder().create();
-                BoissonDto[] boissons = gson.fromJson(reader, BoissonDto[].class);
+                PlatDto[] plats = gson.fromJson(reader, PlatDto[].class);
 
-                if (boissons == null || boissons.length == 0) {
-                    System.out.println("Aucune boisson reçue depuis l’API.");
-                    return;
+                if (plats == null || plats.length == 0) {
+                    System.out.println("Aucun produit dans la catégorie " + idCategorie);
+                    return null;
                 }
 
-                for (BoissonDto boisson : boissons) {
-                    grid.getChildren().add(createBoissonCard(boisson));
-                }
+                // Retourne un plat aléatoire dans cette catégorie
+                int index = (int) (Math.random() * plats.length);
+                return plats[index];
             }
 
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'appel API /categories/3/plats (Boissons)");
+            System.err.println("Erreur lors de l'appel API /categories/" + idCategorie + "/plats :");
             e.printStackTrace();
+            return null;
         } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
+            if (conn != null) conn.disconnect();
         }
     }
 
     /**
-     * Crée une carte (StackPane) pour une boisson donnée.
-     * Structure : Button -> VBox(productCard) -> ImageView + Label nom + Label prix
+     * Crée une carte (StackPane) pour un produit (image + nom + prix).
      */
-    private StackPane createBoissonCard(BoissonDto boisson) {
+    private StackPane createProductCard(PlatDto plat) {
         StackPane root = new StackPane();
 
         Button btn = new Button();
@@ -136,58 +148,65 @@ public class BoissonController {
         imgView.setPreserveRatio(true);
 
         // Nom
-        Label nameLbl = new Label(boisson.nom != null ? boisson.nom : "Boisson");
+        String nom = (plat.nom != null) ? plat.nom : "Produit";
+        Label nameLbl = new Label(nom);
         nameLbl.getStyleClass().add("productName");
 
         // Prix
-        double prix = boisson.prix;
+        double prix = plat.prix;
         Label priceLbl = new Label(String.format("%.2f €", prix));
         priceLbl.getStyleClass().add("productPrice");
 
         vbox.getChildren().addAll(imgView, nameLbl, priceLbl);
 
+        btn.setUserData(plat);
         btn.setGraphic(vbox);
+
+        // Clic = ouvrir la popup détail
         btn.setOnAction(this::onSelectMenu);
 
         root.getChildren().add(btn);
         return root;
     }
 
-    // --- Sélection d’une boisson (ouvre la popup détails) ---
+    // --- Clic sur une carte => popup ---
+
     @FXML
     public void onSelectMenu(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        String name = "Boisson";
-        double price = 0.0;
+        PlatDto plat = (PlatDto) clickedButton.getUserData();
+
         String imageUrl = "/org/example/demo/images/logo.jpg";
 
-        try {
-            if (clickedButton.getGraphic() instanceof VBox vbox) {
-                if (vbox.getChildren().size() >= 3) {
-                    if (vbox.getChildren().get(1) instanceof Label nameLabel) {
-                        name = nameLabel.getText();
-                    }
-                    if (vbox.getChildren().get(2) instanceof Label priceLabel) {
-                        String priceText = priceLabel.getText()
-                                .replace(" €", "")
-                                .replace(",", ".")
-                                .trim();
-                        price = Double.parseDouble(priceText);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String name = (plat != null && plat.nom != null) ? plat.nom : "Produit";
+        double price = (plat != null) ? plat.prix : 0.0;
+
+        String description;
+        if (plat != null && plat.description != null && !plat.description.isBlank()) {
+            description = plat.description;
+        } else {
+            description = "Un délicieux " + name + " préparé avec soin.";
         }
 
+        String categoryLabel = "Produit";
+        if (plat != null && plat.categorie != null) {
+            if (plat.categorie.idCategorie == 1) categoryLabel = "Entrée";
+            else if (plat.categorie.idCategorie == 2) categoryLabel = "Plat";
+            else if (plat.categorie.idCategorie == 3) categoryLabel = "Boisson";
+            else if (plat.categorie.idCategorie == 4) categoryLabel = "Dessert";
+        }
+
+        int id = (plat != null) ? plat.idPlat : 0;
+
         Product product = new Product(
-                400 + (int) (Math.random() * 100),
+                id,
                 name,
-                "Rafraîchissant.",
+                description,
                 price,
                 imageUrl,
-                "Boisson"
+                categoryLabel
         );
+
         SceneManager.getInstance().showProductDetails(product);
         updateTotal();
     }

@@ -38,8 +38,8 @@
                         <VBox styleClass="sidebar" spacing="10">
                             <Label text="Categories" styleClass="sidebarTitle"/>
 
-                            <Button text="Menus" styleClass="catBtn" onAction="#goToMenus">
-                                <graphic>
+                            <Button text="Home" styleClass="catBtn" onAction="#goToAccueil">
+                            <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                         <image><Image url="@../images/test.jpg"/></image>
                                     </ImageView>

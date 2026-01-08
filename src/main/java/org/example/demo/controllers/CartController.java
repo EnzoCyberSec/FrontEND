@@ -56,7 +56,6 @@ public class CartController {
         // Image Produit (Petite)
         ImageView imgView = new ImageView();
         try {
-            // Assure-toi que item.getProduct().getImageUrl() renvoie un chemin valide ou une image par défaut
             imgView.setImage(new Image(getClass().getResource("/org/example/demo/images/logo.jpg").toExternalForm()));
         } catch (Exception e) { /* Ignorer si image non trouvée */ }
         imgView.setFitHeight(60);
@@ -95,7 +94,7 @@ public class CartController {
 
     @FXML
     public void goBack() throws IOException {
-        // Retour au menu principal (ou la dernière catégorie visitée si tu gères l'historique)
+        // Retour au menu principal
         SceneManager.getInstance().switchScene("menu");
     }
 

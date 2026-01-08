@@ -92,7 +92,7 @@ public class DessertController {
                 }
 
                 for (DessertDto d : desserts) {
-                    if (!d.disponible) continue; // si tu gères la dispo
+                    if (!d.disponible) continue;
                     StackPane card = createDessertCard(d);
                     grid.getChildren().add(card);
                 }
@@ -163,7 +163,7 @@ public class DessertController {
     // Navigation
     @FXML public void goBack() throws IOException { SceneManager.getInstance().switchScene("hello-view"); }
     @FXML public void goToCart() throws IOException { SceneManager.getInstance().switchScene("cart"); }
-    @FXML public void goToMenus() throws IOException { SceneManager.getInstance().switchScene("menu"); }
+    @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
     @FXML public void goToStarters() throws IOException { SceneManager.getInstance().switchScene("entree"); }
     @FXML public void goToMainDishes() throws IOException { SceneManager.getInstance().switchScene("plats"); }
     @FXML public void goToDesserts() throws IOException { SceneManager.getInstance().switchScene("desserts"); }

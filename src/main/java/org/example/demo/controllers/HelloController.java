@@ -8,7 +8,7 @@ public class HelloController {
 
     @FXML
     public void startApp() throws IOException {
-        SceneManager.getInstance().switchScene("menu");
+        SceneManager.getInstance().switchScene("accueil");
     }
 
     @FXML

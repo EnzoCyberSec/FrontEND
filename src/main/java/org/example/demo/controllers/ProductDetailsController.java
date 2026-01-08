@@ -68,8 +68,6 @@ public class ProductDetailsController {
             // Gestion de l'option Pimenté
             Product finalProduct = currentProduct;
             if (optionSpicy.isSelected()) {
-                // Créer une copie ou modifier le nom pour le panier (Solution simple)
-                // Idéalement, on aurait un champ "options" dans CartItem
                 finalProduct = new Product(
                         currentProduct.getId(),
                         currentProduct.getName() + " (Pimenté 🌶️)",

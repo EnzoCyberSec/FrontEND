@@ -108,10 +108,6 @@ public class EntreeController {
         }
     }
 
-    /**
-     * Crée une carte (StackPane) pour une entrée, même structure
-     * que tes cartes FXML (ImageView + Label nom + Label prix).
-     */
     private StackPane createEntreeCard(PlatDto plat) {
         StackPane root = new StackPane();
 
@@ -204,10 +200,8 @@ public class EntreeController {
         SceneManager.getInstance().switchScene("cart");
     }
 
-    @FXML
-    public void goToMenus() throws IOException {
-        SceneManager.getInstance().switchScene("menu");
-    }
+    @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
+
 
     @FXML
     public void goToStarters() throws IOException {

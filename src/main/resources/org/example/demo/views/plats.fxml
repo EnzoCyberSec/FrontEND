@@ -45,7 +45,7 @@
 
                             <Label text="Categories" styleClass="sidebarTitle"/>
 
-                            <Button text="Menus" styleClass="catBtn" onAction="#goToMenus">
+                            <Button text="Home" styleClass="catBtn" onAction="#goToAccueil">
                                 <graphic>
                                     <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                         <image>
