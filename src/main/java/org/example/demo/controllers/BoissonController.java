@@ -1,9 +1,9 @@
 package org.example.demo.controllers;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 
 public class BoissonController {
@@ -28,12 +29,7 @@ public class BoissonController {
     @FXML private Label totalLabel;
     @FXML private TilePane grid;
 
-    // DTO pour mapper la réponse JSON /categories/{idBoissons}/plats
-    public static class CategorieDto {
-        public int idCategorie;
-        public String nom;
-    }
-
+    public static class CategorieDto { public int idCategorie; public String nom; }
     public static class BoissonDto {
         public int idPlat;
         public String nom;
@@ -43,6 +39,18 @@ public class BoissonController {
         public CategorieDto categorie;
     }
 
+    private static final String BASE = "/org/example/demo/images/boissons/";
+    private static final String DEFAULT_IMG = BASE + "default.png";
+
+    // ✅ clés normalisées (minuscules + sans espaces/ponctuation)
+    private static final Map<String, String> IMG_BY_KEY = Map.of(
+            "asianbeer", "Asianbeer.png",
+            "cocacola", "Cocacola.png",
+            "evian", "Evian.png",
+            "homemadeicedtea", "Homemadeicedtea.png",
+            "lycheejuice", "Lycheejuice.png"
+    );
+
     @FXML
     public void initialize() {
         loadBoissonsFromApi();
@@ -51,147 +59,157 @@ public class BoissonController {
 
     private void updateTotal() {
         double total = Cart.getInstance().getTotal();
-        if (totalLabel != null) {
-            totalLabel.setText(String.format("Total: %.2f €", total));
-        }
+        if (totalLabel != null) totalLabel.setText(String.format("Total: %.2f €", total));
     }
 
-    /**
-     * Appel à l’API pour récupérer les boissons et remplir le TilePane grid.
-     */
-    private void loadBoissonsFromApi() {
-        if (grid == null) {
-            System.err.println("TilePane 'grid' non injecté (fx:id manquant ou erreur FXML ?)");
-            return;
+    // transforme "Coca cola 33cl" -> "cocacola33cl" puis on enlève les chiffres => "cocacola"
+    private String keyOf(String name) {
+        if (name == null) return "";
+        String s = name.toLowerCase();
+        s = s.replaceAll("[^a-z]", ""); // garde uniquement lettres (virer espaces, -, chiffres, etc.)
+        return s;
+    }
+
+    private String imagePathFor(BoissonDto b) {
+        String key = keyOf(b != null ? b.nom : null);
+
+        // bonus: si la BDD contient "cocacola33cl" -> on reconnait "cocacola"
+        if (key.contains("cocacola") || key.contains("coca")) return BASE + "Cocacola.png";
+        if (key.contains("evian")) return BASE + "Evian.png";
+        if (key.contains("asianbeer") || (key.contains("asian") && key.contains("beer"))) return BASE + "Asianbeer.png";
+        if (key.contains("homemade") || (key.contains("iced") && key.contains("tea"))) return BASE + "Homemadeicedtea.png";
+        if (key.contains("lychee") || key.contains("juice")) return BASE + "Lycheejuice.png";
+
+        // sinon: mapping direct
+        String file = IMG_BY_KEY.get(key);
+        if (file != null) return BASE + file;
+
+        // ✅ PAS DE LOGO : fallback sur default.png dans boissons
+        return DEFAULT_IMG;
+    }
+
+    private ImageView squareImage(String resourcePath, double size) {
+        ImageView iv = new ImageView();
+        iv.getStyleClass().add("productImg");
+        iv.setFitWidth(size);
+        iv.setFitHeight(size);
+        iv.setPreserveRatio(true);
+
+        Image img = null;
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            img = new Image(Objects.requireNonNull(is));
+        } catch (Exception ignored) {}
+
+        if (img == null) {
+            try (InputStream is2 = getClass().getResourceAsStream(DEFAULT_IMG)) {
+                img = new Image(Objects.requireNonNull(is2));
+            } catch (Exception ignored) {}
         }
 
-        // On vide le TilePane pour ne garder que les résultats de l’API
+        if (img != null) {
+            iv.setImage(img);
+            double w = img.getWidth(), h = img.getHeight();
+            double side = Math.min(w, h);
+            iv.setViewport(new Rectangle2D((w - side) / 2, (h - side) / 2, side, side));
+        }
+
+        return iv;
+    }
+
+    private void loadBoissonsFromApi() {
+        if (grid == null) return;
         grid.getChildren().clear();
 
         HttpURLConnection conn = null;
         try {
             URL url = new URL("http://localhost:7001/categories/3/plats");
-
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
-            int status = conn.getResponseCode();
-            if (status != HttpURLConnection.HTTP_OK) {
-                System.err.println("Erreur API /categories/5/plats : HTTP " + status);
-                return;
-            }
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) return;
 
             try (InputStream is = conn.getInputStream();
                  InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 
-                Gson gson = new GsonBuilder().create();
-                BoissonDto[] boissons = gson.fromJson(reader, BoissonDto[].class);
+                BoissonDto[] boissons = new GsonBuilder().create().fromJson(reader, BoissonDto[].class);
+                if (boissons == null) return;
 
-                if (boissons == null || boissons.length == 0) {
-                    System.out.println("Aucune boisson reçue depuis l’API.");
-                    return;
-                }
-
-                for (BoissonDto boisson : boissons) {
-                    grid.getChildren().add(createBoissonCard(boisson));
+                for (BoissonDto b : boissons) {
+                    if (!b.disponible) continue;
+                    grid.getChildren().add(createBoissonCard(b));
                 }
             }
-
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'appel API /categories/3/plats (Boissons)");
             e.printStackTrace();
         } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
+            if (conn != null) conn.disconnect();
         }
     }
 
-    /**
-     * Crée une carte (StackPane) pour une boisson donnée.
-     * Structure : Button -> VBox(productCard) -> ImageView + Label nom + Label prix
-     */
-    private StackPane createBoissonCard(BoissonDto boisson) {
+    private StackPane createBoissonCard(BoissonDto b) {
         StackPane root = new StackPane();
 
         Button btn = new Button();
         btn.getStyleClass().add("menuCardBtn");
 
-        VBox vbox = new VBox();
-        vbox.getStyleClass().add("productCard");
+        VBox card = new VBox();
+        card.getStyleClass().add("productCard");
 
-        // Image
-        ImageView imgView;
-        try (InputStream imgStream = getClass()
-                .getResourceAsStream("/org/example/demo/images/logo.jpg")) {
-            Image img = new Image(Objects.requireNonNull(imgStream));
-            imgView = new ImageView(img);
-        } catch (Exception e) {
-            imgView = new ImageView();
-        }
-        imgView.getStyleClass().add("productImg");
-        imgView.setFitHeight(90);
-        imgView.setFitWidth(120);
-        imgView.setPreserveRatio(true);
+        String imgPath = imagePathFor(b);
+        ImageView imgView = squareImage(imgPath, 100);
 
-        // Nom
-        Label nameLbl = new Label(boisson.nom != null ? boisson.nom : "Boisson");
+        Label nameLbl = new Label(b.nom != null ? b.nom : "Boisson");
         nameLbl.getStyleClass().add("productName");
 
-        // Prix
-        double prix = boisson.prix;
-        Label priceLbl = new Label(String.format("%.2f €", prix));
+        Label priceLbl = new Label(String.format("%.2f €", b.prix));
         priceLbl.getStyleClass().add("productPrice");
 
-        vbox.getChildren().addAll(imgView, nameLbl, priceLbl);
+        card.getChildren().addAll(imgView, nameLbl, priceLbl);
+        btn.setGraphic(card);
 
-        btn.setGraphic(vbox);
+        // stocke pour la popup
+        btn.setUserData(new Object[]{imgPath, b});
         btn.setOnAction(this::onSelectMenu);
 
         root.getChildren().add(btn);
         return root;
     }
 
-    // --- Sélection d’une boisson (ouvre la popup détails) ---
     @FXML
     public void onSelectMenu(ActionEvent event) {
-        Button clickedButton = (Button) event.getSource();
+        Button btn = (Button) event.getSource();
+
+        String imgPath = DEFAULT_IMG;
         String name = "Boisson";
         double price = 0.0;
-        String imageUrl = "/org/example/demo/images/logo.jpg";
+        String desc = "Rafraîchissant.";
 
         try {
-            if (clickedButton.getGraphic() instanceof VBox vbox) {
-                if (vbox.getChildren().size() >= 3) {
-                    if (vbox.getChildren().get(1) instanceof Label nameLabel) {
-                        name = nameLabel.getText();
-                    }
-                    if (vbox.getChildren().get(2) instanceof Label priceLabel) {
-                        String priceText = priceLabel.getText()
-                                .replace(" €", "")
-                                .replace(",", ".")
-                                .trim();
-                        price = Double.parseDouble(priceText);
-                    }
-                }
+            Object[] data = (Object[]) btn.getUserData();
+            imgPath = (String) data[0];
+            BoissonDto b = (BoissonDto) data[1];
+            if (b != null) {
+                name = (b.nom != null) ? b.nom : name;
+                price = b.prix;
+                if (b.description != null && !b.description.isBlank()) desc = b.description;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) {}
 
         Product product = new Product(
                 400 + (int) (Math.random() * 100),
                 name,
-                "Rafraîchissant.",
+                desc,
                 price,
-                imageUrl,
+                imgPath,
                 "Boisson"
         );
+
         SceneManager.getInstance().showProductDetails(product);
         updateTotal();
     }
 
+    // Navigation
     @FXML public void goBack() throws IOException { SceneManager.getInstance().switchScene("hello-view"); }
     @FXML public void goToCart() throws IOException { SceneManager.getInstance().switchScene("cart"); }
     @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }

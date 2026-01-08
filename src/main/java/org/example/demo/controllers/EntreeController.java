@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -21,6 +22,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
+import java.util.Locale;
 import java.util.Objects;
 
 public class EntreeController {
@@ -45,7 +48,7 @@ public class EntreeController {
 
     @FXML
     public void initialize() {
-        loadEntreesFromApi();  // charge les entrées depuis l'API
+        loadEntreesFromApi();
         updateTotal();
     }
 
@@ -57,8 +60,92 @@ public class EntreeController {
     }
 
     /**
-     * Appel à l’API Javalin pour récupérer les entrées et
-     * remplir le TilePane grid.
+     * Associe automatiquement le NOM du plat à son image locale.
+     * Convention: plat.nom nettoyé -> NomDeFichier.png
+     *
+     * Exemple:
+     *  "Chicken gyoza" -> "/org/example/demo/images/entrees/Chickengyoza.png"
+     *  "Miso soup"     -> "/org/example/demo/images/entrees/Misosoup.png"
+     *
+     * Place tes images ici:
+     *  src/main/resources/org/example/demo/images/entrees/
+     *
+     * Ajoute un fallback:
+     *  default.png
+     */
+    private String imageForPlat(PlatDto plat) {
+        String basePath = "/org/example/demo/images/entrees/";
+
+        if (plat == null || plat.nom == null || plat.nom.isBlank()) {
+            return basePath + "default.png";
+        }
+
+        // 1) lower
+        String s = plat.nom.toLowerCase(Locale.ROOT);
+
+        // 2) retire accents
+        s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+
+        // 3) garde lettres + espaces uniquement, vire ponctuation/chiffres
+        s = s.replaceAll("[^a-z ]", " ");
+
+        // 4) enlève espaces (Chicken gyoza -> chickengyoza)
+        s = s.replaceAll("\\s+", "").trim();
+
+        if (s.isEmpty()) {
+            return basePath + "default.png";
+        }
+
+        // 5) Majuscule 1ère lettre (Chickengyoza)
+        String fileName = Character.toUpperCase(s.charAt(0)) + s.substring(1);
+
+        // 6) construit chemin final
+        String imagePath = basePath + fileName + ".png";
+
+        // 7) vérifie existence (sinon fallback)
+        if (getClass().getResource(imagePath) != null) {
+            return imagePath;
+        }
+        return basePath + "default.png";
+    }
+
+    /**
+     * Construit un ImageView carré (sans déformation) avec crop centré.
+     */
+    private ImageView buildImageViewSquareCropped(String resourcePath, double size) {
+        ImageView imgView = new ImageView();
+        imgView.getStyleClass().add("productImg");
+        imgView.setFitWidth(size);
+        imgView.setFitHeight(size);
+        imgView.setPreserveRatio(true);
+
+        Image img = null;
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            img = new Image(Objects.requireNonNull(is));
+        } catch (Exception e) {
+            // fallback
+            try (InputStream is2 = getClass().getResourceAsStream("/org/example/demo/images/logo.jpg")) {
+                if (is2 != null) img = new Image(is2);
+            } catch (Exception ignored) {}
+        }
+
+        if (img != null) {
+            imgView.setImage(img);
+
+            // viewport carré centré
+            double w = img.getWidth();
+            double h = img.getHeight();
+            double side = Math.min(w, h);
+            double x = (w - side) / 2.0;
+            double y = (h - side) / 2.0;
+            imgView.setViewport(new Rectangle2D(x, y, side, side));
+        }
+
+        return imgView;
+    }
+
+    /**
+     * Appel à l’API Javalin pour récupérer les entrées et remplir le TilePane grid.
      */
     private void loadEntreesFromApi() {
         if (grid == null) {
@@ -66,7 +153,6 @@ public class EntreeController {
             return;
         }
 
-        // On vide le TilePane pour enlever toute entrée statique
         grid.getChildren().clear();
 
         HttpURLConnection conn = null;
@@ -102,9 +188,7 @@ public class EntreeController {
             System.err.println("Erreur lors de l'appel API /categories/1/plats :");
             e.printStackTrace();
         } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
+            if (conn != null) conn.disconnect();
         }
     }
 
@@ -117,19 +201,9 @@ public class EntreeController {
         VBox vbox = new VBox();
         vbox.getStyleClass().add("productCard");
 
-        // Image
-        ImageView imgView;
-        try (InputStream imgStream = getClass()
-                .getResourceAsStream("/org/example/demo/images/logo.jpg")) {
-            Image img = new Image(Objects.requireNonNull(imgStream));
-            imgView = new ImageView(img);
-        } catch (Exception e) {
-            imgView = new ImageView();
-        }
-        imgView.getStyleClass().add("productImg");
-        imgView.setFitHeight(90);
-        imgView.setFitWidth(120);
-        imgView.setPreserveRatio(true);
+        // Image (auto: nom -> fichier)
+        String imagePath = imageForPlat(plat);
+        ImageView imgView = buildImageViewSquareCropped(imagePath, 100);
 
         // Nom
         String nom = (plat.nom != null) ? plat.nom : "Entrée";
@@ -145,6 +219,9 @@ public class EntreeController {
 
         btn.setGraphic(vbox);
 
+        // stocke l'image pour le popup
+        btn.setUserData(imagePath);
+
         btn.setOnAction(this::onSelectMenu);
 
         root.getChildren().add(btn);
@@ -155,10 +232,17 @@ public class EntreeController {
     @FXML
     public void onSelectMenu(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
+
         String name = "Entrée";
         double price = 0.0;
-        String imageUrl = "/org/example/demo/images/logo.jpg";
 
+        // récupère l’image associée à la card
+        String imageUrl = "/org/example/demo/images/entrees/default.png";
+        if (clickedButton.getUserData() instanceof String) {
+            imageUrl = (String) clickedButton.getUserData();
+        }
+
+        // récupère nom/prix depuis le VBox (graphic)
         try {
             if (clickedButton.getGraphic() instanceof VBox) {
                 VBox vbox = (VBox) clickedButton.getGraphic();
@@ -185,6 +269,7 @@ public class EntreeController {
                 imageUrl,
                 "Entrée"
         );
+
         SceneManager.getInstance().showProductDetails(product);
         updateTotal();
     }
@@ -201,7 +286,6 @@ public class EntreeController {
     }
 
     @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
-
 
     @FXML
     public void goToStarters() throws IOException {

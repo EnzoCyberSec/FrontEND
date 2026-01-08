@@ -3,6 +3,7 @@ package org.example.demo.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -20,6 +21,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
+import java.util.Locale;
 import java.util.Objects;
 
 public class DessertController {
@@ -27,7 +30,7 @@ public class DessertController {
     @FXML private Label totalLabel;
     @FXML private TilePane grid;
 
-    // DTO pour mapper la réponse JSON /categories/4/plats
+    // DTO
     public static class CategorieDto {
         public int idCategorie;
         public String nom;
@@ -56,7 +59,90 @@ public class DessertController {
     }
 
     /**
-     * Appel à l’API pour récupérer les desserts et remplir le TilePane grid.
+     * Même méthode que EntreeController:
+     * plat.nom nettoyé -> NomDeFichier.png (Majuscule 1ère lettre)
+     *
+     * Dossier:
+     *  src/main/resources/org/example/demo/images/desserts/
+     *
+     * Fallback:
+     *  default.png
+     */
+    private String imageForDessert(DessertDto d) {
+        String basePath = "/org/example/demo/images/desserts/";
+
+        if (d == null || d.nom == null || d.nom.isBlank()) {
+            return basePath + "default.png";
+        }
+
+        // 1) lower
+        String s = d.nom.toLowerCase(Locale.ROOT);
+
+        // 2) retire accents
+        s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+
+        // 3) garde lettres + espaces uniquement, vire ponctuation/chiffres
+        s = s.replaceAll("[^a-z ]", " ");
+
+        // 4) enlève espaces
+        s = s.replaceAll("\\s+", "").trim();
+
+        if (s.isEmpty()) {
+            return basePath + "default.png";
+        }
+
+        // 5) Majuscule 1ère lettre
+        String fileName = Character.toUpperCase(s.charAt(0)) + s.substring(1);
+
+        // 6) chemin final
+        String imagePath = basePath + fileName + ".png";
+
+        // 7) vérifie existence
+        if (getClass().getResource(imagePath) != null) {
+            return imagePath;
+        }
+
+        return basePath + "default.png";
+    }
+
+    /**
+     * Même méthode que EntreeController:
+     * carré sans déformation + crop centré.
+     */
+    private ImageView buildImageViewSquareCropped(String resourcePath, double size) {
+        ImageView imgView = new ImageView();
+        imgView.getStyleClass().add("productImg");
+        imgView.setFitWidth(size);
+        imgView.setFitHeight(size);
+        imgView.setPreserveRatio(true);
+
+        Image img = null;
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            img = new Image(Objects.requireNonNull(is));
+        } catch (Exception e) {
+            // fallback
+            try (InputStream is2 = getClass().getResourceAsStream("/org/example/demo/images/logo.jpg")) {
+                if (is2 != null) img = new Image(is2);
+            } catch (Exception ignored) {}
+        }
+
+        if (img != null) {
+            imgView.setImage(img);
+
+            double w = img.getWidth();
+            double h = img.getHeight();
+            double side = Math.min(w, h);
+            double x = (w - side) / 2.0;
+            double y = (h - side) / 2.0;
+
+            imgView.setViewport(new Rectangle2D(x, y, side, side));
+        }
+
+        return imgView;
+    }
+
+    /**
+     * Appel API: desserts = categorie 4
      */
     private void loadDessertsFromApi() {
         if (grid == null) {
@@ -68,7 +154,6 @@ public class DessertController {
 
         HttpURLConnection conn = null;
         try {
-            // 4 = Desserts dans ta table categorie
             URL url = new URL("http://localhost:7001/categories/4/plats");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -93,38 +178,29 @@ public class DessertController {
 
                 for (DessertDto d : desserts) {
                     if (!d.disponible) continue;
-                    StackPane card = createDessertCard(d);
-                    grid.getChildren().add(card);
+                    grid.getChildren().add(createDessertCard(d));
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
+            if (conn != null) conn.disconnect();
         }
     }
 
     private StackPane createDessertCard(DessertDto d) {
         StackPane root = new StackPane();
 
-        Button button = new Button();
-        button.getStyleClass().add("menuCardBtn");
+        Button btn = new Button();
+        btn.getStyleClass().add("menuCardBtn");
 
         VBox card = new VBox();
         card.getStyleClass().add("productCard");
 
-        // Image du dessert (par défaut ton logo)
-        String imagePath = "/org/example/demo/images/logo.jpg";
-        Image image = new Image(Objects.requireNonNull(
-                getClass().getResourceAsStream(imagePath)
-        ));
-        ImageView imageView = new ImageView(image);
-        imageView.getStyleClass().add("productImg");
-        imageView.setFitHeight(90);
-        imageView.setFitWidth(120);
-        imageView.setPreserveRatio(true);
+        // Image auto: nom -> fichier
+        String imagePath = imageForDessert(d);
+        ImageView imgView = buildImageViewSquareCropped(imagePath, 100);
 
         Label nameLabel = new Label(d.nom != null ? d.nom : "Dessert");
         nameLabel.getStyleClass().add("productName");
@@ -132,26 +208,38 @@ public class DessertController {
         Label priceLabel = new Label(String.format("%.2f €", d.prix));
         priceLabel.getStyleClass().add("productPrice");
 
-        card.getChildren().addAll(imageView, nameLabel, priceLabel);
-        button.setGraphic(card);
+        card.getChildren().addAll(imgView, nameLabel, priceLabel);
+        btn.setGraphic(card);
 
-        button.setOnAction(e -> handleSelectDessert(d));
+        // stocke l'image pour le popup (comme Entree)
+        btn.setUserData(imagePath);
 
-        root.getChildren().add(button);
+        // même logique que Entree: on réutilise le handler
+        btn.setOnAction(e -> handleSelectDessert(btn, d));
+
+        root.getChildren().add(btn);
         return root;
     }
 
-    private void handleSelectDessert(DessertDto d) {
-        String imageUrl = "/org/example/demo/images/logo.jpg";
+    private void handleSelectDessert(Button clickedButton, DessertDto d) {
+        String name = (d.nom != null) ? d.nom : "Dessert";
+        double price = d.prix;
+
+        // récupère l’image associée à la card
+        String imageUrl = "/org/example/demo/images/desserts/default.png";
+        if (clickedButton.getUserData() instanceof String) {
+            imageUrl = (String) clickedButton.getUserData();
+        }
+
         String description = (d.description != null && !d.description.isBlank())
                 ? d.description
                 : "Une touche sucrée.";
 
         Product product = new Product(
                 d.idPlat,
-                d.nom,
+                name,
                 description,
-                d.prix,
+                price,
                 imageUrl,
                 "Dessert"
         );

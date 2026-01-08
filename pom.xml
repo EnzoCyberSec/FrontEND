@@ -70,8 +70,8 @@
                 <version>3.13.0</version>
                 <configuration>
                     <!-- Java utilisé par Maven = 17 -->
-                    <source>25</source>
-                    <target>25</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
 
