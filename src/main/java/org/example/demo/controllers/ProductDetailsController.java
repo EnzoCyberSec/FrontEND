@@ -219,8 +219,11 @@ public class ProductDetailsController {
     }
 
     @FXML private void increaseQuantity() {
-        quantity++;
-        quantityLabel.setText(String.valueOf(quantity));
+        // On bloque l'augmentation si on atteint 9
+        if (quantity < 9) {
+            quantity++;
+            quantityLabel.setText(String.valueOf(quantity));
+        }
     }
 
     @FXML private void decreaseQuantity() {

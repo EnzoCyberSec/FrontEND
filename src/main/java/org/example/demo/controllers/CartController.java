@@ -80,7 +80,6 @@ public class CartController {
         VBox infoBox = new VBox(5);
 
         Label nameLabel = new Label(item.getProduct().getName());
-        // CORRECTION ICI : Ajout de -fx-text-fill: black; pour assurer la visibilité
         nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: black;");
 
         Label priceLabel = new Label(
@@ -90,7 +89,7 @@ public class CartController {
 
         infoBox.getChildren().addAll(nameLabel, priceLabel);
 
-        // --- Affichage des options ---
+        // --- Options ---
         if (item.getOptions() != null && !item.getOptions().isEmpty()) {
             for (Option opt : item.getOptions()) {
                 Label optLabel = new Label(" + " + opt.getLibelle());
@@ -103,10 +102,35 @@ public class CartController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // --- 3. Quantity ---
-        Label qtyLabel = new Label("x" + item.getQuantity());
-        // Ajout de la couleur noire ici aussi par sécurité
-        qtyLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: black;");
+        // --- 3. Quantity Controls (MODIFIÉ) ---
+        HBox qtyBox = new HBox(8);
+        qtyBox.setAlignment(Pos.CENTER);
+
+        // Bouton Moins
+        Button minusBtn = new Button("-");
+        minusBtn.setStyle("-fx-min-width: 25px; -fx-background-radius: 5;");
+        minusBtn.setOnAction(e -> {
+            if (item.getQuantity() > 1) {
+                item.setQuantity(item.getQuantity() - 1);
+                refreshCartDisplay(); // Rafraîchit l'affichage et le total
+            }
+        });
+
+        // Label Quantité
+        Label qtyLabel = new Label(String.valueOf(item.getQuantity()));
+        qtyLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: black; -fx-min-width: 20px; -fx-alignment: center;");
+
+        // Bouton Plus
+        Button plusBtn = new Button("+");
+        plusBtn.setStyle("-fx-min-width: 25px; -fx-background-radius: 5;");
+        plusBtn.setOnAction(e -> {
+            if (item.getQuantity() < 9) { // Limite max à 9
+                item.setQuantity(item.getQuantity() + 1);
+                refreshCartDisplay(); // Rafraîchit l'affichage et le total
+            }
+        });
+
+        qtyBox.getChildren().addAll(minusBtn, qtyLabel, plusBtn);
 
         // --- 4. Subtotal ---
         Label subTotalLabel = new Label(String.format("%.2f €", item.getSubtotal()));
@@ -130,8 +154,9 @@ public class CartController {
             refreshCartDisplay();
         });
 
+        // Ajout de qtyBox à la place de l'ancien label qty
         card.getChildren().addAll(
-                imgView, infoBox, spacer, qtyLabel, subTotalLabel, deleteBtn
+                imgView, infoBox, spacer, qtyBox, subTotalLabel, deleteBtn
         );
         return card;
     }
