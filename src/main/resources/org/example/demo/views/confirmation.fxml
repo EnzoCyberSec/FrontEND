@@ -28,28 +28,30 @@
     <center>
         <VBox spacing="18" alignment="CENTER" styleClass="confirmContent">
 
-            <Label text="✓" styleClass="confirmIcon"
+            <Label text="✓"
+                   styleClass="confirmIcon"
                    style="-fx-font-size: 60px; -fx-text-fill: #22c55e;"/>
 
-            <Label text="Commande Confirmée !"
+            <Label text="Order Confirmed!"
                    styleClass="confirmTitle"
                    style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
 
-            <Label text="Merci de votre visite !"
+            <Label text="Thank you for your visit!"
                    styleClass="confirmSubtitle"
                    style="-fx-font-size: 18px; -fx-text-fill: #666;"/>
 
-            <VBox spacing="8" alignment="CENTER"
+            <VBox spacing="8"
+                  alignment="CENTER"
                   styleClass="confirmInfoBox"
                   style="-fx-background-color: #f9f9f9; -fx-padding: 20; -fx-background-radius: 10; -fx-max-width: 400;">
 
                 <Label fx:id="orderNumber"
-                       text="Numéro de commande : #..."
+                       text="Order number: #..."
                        styleClass="confirmInfoTitle"
                        style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
                 <Label fx:id="estimatedTime"
-                       text="Temps estimé : ..."
+                       text="Estimated time: ..."
                        styleClass="confirmInfoText"
                        style="-fx-font-size: 16px; -fx-text-fill: #555;"/>
             </VBox>
@@ -57,18 +59,5 @@
         </VBox>
     </center>
 
-    <bottom>
-        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 0 0 30 0;">
-            <Button text="🏠 Accueil"
-                    styleClass="cartActionBtn, cartActionSecondary, cartActionWide"
-                    style="-fx-font-size: 16px; -fx-padding: 12 30;"
-                    onAction="#goHome"/>
-
-            <Button text="➕ Nouvelle Commande"
-                    styleClass="cartActionBtn, cartActionPrimary, cartActionWide"
-                    style="-fx-font-size: 16px; -fx-padding: 12 30;"
-                    onAction="#newOrder"/>
-        </HBox>
-    </bottom>
 
 </BorderPane>

@@ -19,7 +19,6 @@ import org.example.demo.services.OrderApiService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 public class CartController {
 
@@ -31,24 +30,30 @@ public class CartController {
         refreshCartDisplay();
     }
 
+    // =============================================================
+    // DISPLAY METHODS
+    // =============================================================
+
     private void refreshCartDisplay() {
+        if (cartItemsContainer == null) return;
+
         cartItemsContainer.getChildren().clear();
         Cart cart = Cart.getInstance();
 
         if (cart.getItems().isEmpty()) {
-            Label emptyLabel = new Label("Votre panier est vide ☹");
+            Label emptyLabel = new Label("Your cart is empty ☹");
             emptyLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: #888;");
             cartItemsContainer.getChildren().add(emptyLabel);
-            totalLabel.setText("0.00 €");
+            if (totalLabel != null) totalLabel.setText("0.00 €");
         } else {
             for (int i = 0; i < cart.getItems().size(); i++) {
                 CartItem item = cart.getItems().get(i);
-                // On passe l'index pour que le bouton supprimer sache quel item viser
                 HBox card = createCartItemCard(item, i);
                 cartItemsContainer.getChildren().add(card);
             }
-            // Mise à jour du total
-            totalLabel.setText(String.format("%.2f €", cart.getTotal()));
+            if (totalLabel != null) {
+                totalLabel.setText(String.format("%.2f €", cart.getTotal()));
+            }
         }
     }
 
@@ -62,41 +67,44 @@ public class CartController {
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);"
         );
 
-        // --- 1. Image du produit (Logique intelligente) ---
-        // On récupère le chemin d'image stocké dans le produit (depuis Accueil/Boissons)
+        // --- 1. Product image ---
         String imagePath = item.getProduct().getImageUrl();
-        // Si pas d'image spécifique, on met le logo par défaut
         if (imagePath == null || imagePath.isEmpty()) {
             imagePath = "/org/example/demo/images/logo.jpg";
         }
 
         ImageView imgView = squareImage(imagePath, 60);
 
-        // --- 2. Informations (Nom + Prix) ---
+        // --- 2. Product information ---
         VBox infoBox = new VBox(5);
+
         Label nameLabel = new Label(item.getProduct().getName());
         nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
-        Label priceLabel = new Label(String.format("%.2f € / unité", item.getProduct().getPrice()));
+        Label priceLabel = new Label(
+                String.format("%.2f € / unit", item.getProduct().getPrice())
+        );
         priceLabel.setStyle("-fx-text-fill: #666; -fx-font-size: 12px;");
 
         infoBox.getChildren().addAll(nameLabel, priceLabel);
 
-        // Spacer pour pousser le reste à droite
+        // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // --- 3. Quantité ---
+        // --- 3. Quantity ---
         Label qtyLabel = new Label("x" + item.getQuantity());
         qtyLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        // --- 4. Sous-total ---
+        // --- 4. Subtotal ---
         Label subTotalLabel = new Label(String.format("%.2f €", item.getSubtotal()));
-        subTotalLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #e46725;");
-        subTotalLabel.setMinWidth(80); // Alignement propre
+        subTotalLabel.setStyle(
+                "-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #e46725;"
+        );
+        subTotalLabel.setMinWidth(80);
         subTotalLabel.setAlignment(Pos.CENTER_RIGHT);
 
-        // --- 5. Bouton Supprimer ---
+        // --- 5. Delete button ---
         Button deleteBtn = new Button("X");
         deleteBtn.setStyle(
                 "-fx-background-color: #ffcccc;" +
@@ -110,11 +118,12 @@ public class CartController {
             refreshCartDisplay();
         });
 
-        card.getChildren().addAll(imgView, infoBox, spacer, qtyLabel, subTotalLabel, deleteBtn);
+        card.getChildren().addAll(
+                imgView, infoBox, spacer, qtyLabel, subTotalLabel, deleteBtn
+        );
         return card;
     }
 
-    // Méthode utilitaire pour afficher une image carrée (Uniformité du design)
     private ImageView squareImage(String resourcePath, double size) {
         ImageView iv = new ImageView();
         iv.setFitWidth(size);
@@ -126,31 +135,31 @@ public class CartController {
             if (is != null) img = new Image(is);
         } catch (Exception ignored) {}
 
-        // Fallback sur le logo si l'image spécifique échoue
         if (img == null) {
-            try (InputStream isLogo = getClass().getResourceAsStream("/org/example/demo/images/logo.jpg")) {
+            try (InputStream isLogo = getClass().getResourceAsStream(
+                    "/org/example/demo/images/logo.jpg")) {
                 if (isLogo != null) img = new Image(isLogo);
             } catch (Exception ignored) {}
         }
 
         if (img != null) {
             iv.setImage(img);
-            // Centrage et crop carré
             double w = img.getWidth();
             double h = img.getHeight();
             double side = Math.min(w, h);
-            iv.setViewport(new Rectangle2D((w - side) / 2, (h - side) / 2, side, side));
+            iv.setViewport(new Rectangle2D(
+                    (w - side) / 2, (h - side) / 2, side, side
+            ));
         }
         return iv;
     }
 
-    // ==========================
-    //  Actions (Navigation & API)
-    // ==========================
+    // =============================================================
+    // NAVIGATION & CHECKOUT
+    // =============================================================
 
     @FXML
     public void goBack() throws IOException {
-        // Retour à l'accueil (Navigation JB plus cohérente)
         SceneManager.getInstance().switchScene("accueil");
     }
 
@@ -165,39 +174,33 @@ public class CartController {
         Cart cart = Cart.getInstance();
 
         if (cart.getItems().isEmpty()) {
-            showInfoAlert("Panier vide", "Votre panier est vide, impossible de passer une commande.");
+            showInfoAlert(
+                    "Empty cart",
+                    "Your cart is empty. You cannot place an order."
+            );
             return;
         }
 
         try {
-            // LOGIQUE ENZO : Appel API Réel
-            // Création de la commande + lignes de commande dans la BDD
-            int idCommande = OrderApiService.createCommandeWithLinesFromCart(cart);
+            int orderId = OrderApiService.createCommandeWithLinesFromCart(cart);
 
-            // On vide le panier côté front après succès
             cart.clear();
-            refreshCartDisplay();
 
-            // Message de succès
-            showInfoAlert(
-                    "Commande validée !",
-                    "Votre commande n°" + idCommande + " a été enregistrée avec succès.\nMerci de votre visite !"
-            );
+            ConfirmationController.lastOrderId = orderId;
 
-            // Optionnel : rediriger vers l'accueil après le clic sur OK
-            SceneManager.getInstance().switchScene("accueil");
+            SceneManager.getInstance().switchScene("confirmation");
 
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert(
-                    "Erreur technique",
-                    "Impossible de valider la commande.\n\nDétail : " + e.getMessage()
+                    "Technical error",
+                    "Unable to validate the order.\n\nDetails: " + e.getMessage()
             );
         }
     }
 
     // ==========================
-    //  Alertes
+    // Alerts
     // ==========================
 
     private void showInfoAlert(String title, String message) {

@@ -25,16 +25,18 @@
                         <Image url="@../images/logo.jpg"/>
                     </image>
                 </ImageView>
-                <Label text="Votre Panier" styleClass="pageTitle"/>
+                <Label text="Your Cart" styleClass="pageTitle"/>
             </HBox>
         </VBox>
     </top>
 
     <center>
         <VBox spacing="10" styleClass="content" style="-fx-padding: 10 40 10 40;">
-            <Label text="Récapitulatif de la commande" styleClass="sectionTitle"/>
+            <Label text="Order summary" styleClass="sectionTitle"/>
 
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED">
+            <ScrollPane fitToWidth="true"
+                        style="-fx-background-color: transparent; -fx-background: transparent;"
+                        vbarPolicy="AS_NEEDED">
                 <content>
                     <VBox fx:id="cartItemsContainer" spacing="15" style="-fx-padding: 10;">
                     </VBox>
@@ -50,22 +52,22 @@
 
                     <left>
                         <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Label text="Total à payer :" styleClass="cartTotalLabel"/>
+                            <Label text="Total to pay:" styleClass="cartTotalLabel"/>
                             <Label fx:id="totalLabel" text="0.00 €" styleClass="cartTotalValue"/>
                         </HBox>
                     </left>
 
                     <center>
                         <HBox spacing="16" alignment="CENTER" styleClass="cartActionsBar">
-                            <Button text="← Ajouter d'autres articles"
+                            <Button text="← Add more items"
                                     styleClass="cartActionBtn, cartActionSecondary, cartActionWide"
                                     onAction="#goBack"/>
 
-                            <Button text="🗑️ Vider"
+                            <Button text="🗑️ Clear"
                                     styleClass="cartActionBtn, cartActionSecondary"
                                     onAction="#clearCart"/>
 
-                            <Button text="Payer &amp; Commander ➤"
+                            <Button text="Pay &amp; Order ➤"
                                     styleClass="cartActionBtn, cartActionPrimary, cartActionWide"
                                     onAction="#checkout"/>
                         </HBox>
