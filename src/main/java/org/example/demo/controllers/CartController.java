@@ -95,7 +95,7 @@ public class CartController {
     @FXML
     public void goBack() throws IOException {
         // Retour au menu principal
-        SceneManager.getInstance().switchScene("menu");
+        SceneManager.getInstance().switchScene("accueil");
     }
 
     @FXML
