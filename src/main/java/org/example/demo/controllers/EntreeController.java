@@ -28,7 +28,13 @@ public class EntreeController {
     @FXML private Label totalLabel;
     @FXML private TilePane grid;
 
-    // DTO pour mapper la réponse JSON de l'API
+    // --- DTOs pour l'API ---
+
+    private static class CategorieDto {
+        int idCategorie;
+        String nom;
+    }
+
     private static class PlatDto {
         int idPlat;
         String nom;
@@ -38,14 +44,11 @@ public class EntreeController {
         CategorieDto categorie;
     }
 
-    private static class CategorieDto {
-        int idCategorie;
-        String nom;
-    }
+    // --- Cycle de vie ---
 
     @FXML
     public void initialize() {
-        loadEntreesFromApi();  // charge les entrées depuis l'API
+        loadEntreesFromApi();  // charge toutes les entrées
         updateTotal();
     }
 
@@ -56,57 +59,66 @@ public class EntreeController {
         }
     }
 
-    /**
-     * Appel à l’API Javalin pour récupérer les entrées et
-     * remplir le TilePane grid.
-     */
+    // --- Chargement des entrées depuis l'API ---
+
     private void loadEntreesFromApi() {
         if (grid == null) {
             System.err.println("TilePane 'grid' non injecté (fx:id manquant dans le FXML ?)");
             return;
         }
 
-        // On vide le TilePane pour enlever toute entrée statique
         grid.getChildren().clear();
 
+        PlatDto[] plats = fetchPlatsFromCategory(1); // 1 = Entrées
+
+        if (plats == null || plats.length == 0) {
+            System.out.println("Aucune entrée trouvée pour la catégorie 1");
+            return;
+        }
+
+        for (PlatDto plat : plats) {
+            if (plat != null && plat.disponible) {
+                grid.getChildren().add(createEntreeCard(plat));
+            }
+        }
+    }
+
+    /**
+     * Appelle /categories/{idCategorie}/plats et retourne le tableau de plats.
+     */
+    private PlatDto[] fetchPlatsFromCategory(int idCategorie) {
         HttpURLConnection conn = null;
         try {
-            URL url = new URL("http://localhost:7001/categories/1/plats");
-
+            URL url = new URL("http://localhost:7001/categories/" + idCategorie + "/plats");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
             int status = conn.getResponseCode();
             if (status != HttpURLConnection.HTTP_OK) {
-                System.err.println("Erreur API entrées : HTTP " + status);
-                return;
+                System.err.println("Erreur API /categories/" + idCategorie + "/plats : HTTP " + status);
+                return null;
             }
 
             try (InputStream is = conn.getInputStream();
                  InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 
                 Gson gson = new GsonBuilder().create();
-                PlatDto[] plats = gson.fromJson(reader, PlatDto[].class);
-
-                if (plats != null) {
-                    for (PlatDto plat : plats) {
-                        grid.getChildren().add(createEntreeCard(plat));
-                    }
-                } else {
-                    System.err.println("Réponse API vide ou invalide pour /categories/1/plats");
-                }
+                return gson.fromJson(reader, PlatDto[].class);
             }
 
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'appel API /categories/1/plats :");
+            System.err.println("Erreur lors de l'appel API /categories/" + idCategorie + "/plats :");
             e.printStackTrace();
+            return null;
         } finally {
             if (conn != null) {
                 conn.disconnect();
             }
         }
     }
+
+    // --- Création d'une carte pour une entrée ---
 
     private StackPane createEntreeCard(PlatDto plat) {
         StackPane root = new StackPane();
@@ -144,52 +156,60 @@ public class EntreeController {
         vbox.getChildren().addAll(imgView, nameLbl, priceLbl);
 
         btn.setGraphic(vbox);
+        btn.setUserData(plat);
 
+        // Clic = ouvrir la popup détail
         btn.setOnAction(this::onSelectMenu);
 
         root.getChildren().add(btn);
         return root;
     }
 
-    // --- Action Article (Popup) ---
+    // --- Clic sur une carte => popup détail produit ---
+
     @FXML
     public void onSelectMenu(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        String name = "Entrée";
-        double price = 0.0;
+        PlatDto plat = (PlatDto) clickedButton.getUserData();
+
         String imageUrl = "/org/example/demo/images/logo.jpg";
 
-        try {
-            if (clickedButton.getGraphic() instanceof VBox) {
-                VBox vbox = (VBox) clickedButton.getGraphic();
-                if (vbox.getChildren().size() >= 3) {
-                    if (vbox.getChildren().get(1) instanceof Label) {
-                        name = ((Label) vbox.getChildren().get(1)).getText();
-                    }
-                    if (vbox.getChildren().get(2) instanceof Label) {
-                        String priceText = ((Label) vbox.getChildren().get(2)).getText()
-                                .replace(" €", "").replace(",", ".").trim();
-                        price = Double.parseDouble(priceText);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String name = (plat != null && plat.nom != null) ? plat.nom : "Entrée";
+        double price = (plat != null) ? plat.prix : 0.0;
+
+        // ✅ Description venant de la BDD si présente
+        String description;
+        if (plat != null && plat.description != null && !plat.description.isBlank()) {
+            description = plat.description;
+        } else {
+            description = "Une entrée savoureuse pour bien commencer.";
         }
 
+        String categoryLabel = "Entrée";
+        if (plat != null && plat.categorie != null) {
+            if (plat.categorie.idCategorie == 1) categoryLabel = "Entrée";
+            else if (plat.categorie.idCategorie == 2) categoryLabel = "Plat";
+            else if (plat.categorie.idCategorie == 3) categoryLabel = "Boisson";
+            else if (plat.categorie.idCategorie == 4) categoryLabel = "Dessert";
+        }
+
+        int id = (plat != null) ? plat.idPlat : 0;
+
         Product product = new Product(
-                100 + (int) (Math.random() * 100),
+                id,
                 name,
-                "Une entrée savoureuse pour bien commencer.",
+                description,
                 price,
                 imageUrl,
-                "Entrée"
+                categoryLabel
         );
+
         SceneManager.getInstance().showProductDetails(product);
         updateTotal();
     }
 
     // --- Navigation ---
+
     @FXML
     public void goBack() throws IOException {
         SceneManager.getInstance().switchScene("hello-view");
@@ -200,11 +220,14 @@ public class EntreeController {
         SceneManager.getInstance().switchScene("cart");
     }
 
-    @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
-
+    @FXML
+    public void goToAccueil() throws IOException {
+        SceneManager.getInstance().switchScene("accueil");
+    }
 
     @FXML
     public void goToStarters() throws IOException {
+        // si ta scène FXML des entrées s'appelle autrement, adapte ce nom
         SceneManager.getInstance().switchScene("entree");
     }
 

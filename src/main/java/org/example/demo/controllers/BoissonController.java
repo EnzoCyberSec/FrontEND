@@ -78,7 +78,7 @@ public class BoissonController {
 
             int status = conn.getResponseCode();
             if (status != HttpURLConnection.HTTP_OK) {
-                System.err.println("Erreur API /categories/5/plats : HTTP " + status);
+                System.err.println("Erreur API /categories/3/plats : HTTP " + status);
                 return;
             }
 
@@ -94,7 +94,9 @@ public class BoissonController {
                 }
 
                 for (BoissonDto boisson : boissons) {
-                    grid.getChildren().add(createBoissonCard(boisson));
+                    if (boisson != null && boisson.disponible) {
+                        grid.getChildren().add(createBoissonCard(boisson));
+                    }
                 }
             }
 
@@ -147,6 +149,8 @@ public class BoissonController {
         vbox.getChildren().addAll(imgView, nameLbl, priceLbl);
 
         btn.setGraphic(vbox);
+        btn.setUserData(boisson);
+
         btn.setOnAction(this::onSelectMenu);
 
         root.getChildren().add(btn);
@@ -157,36 +161,37 @@ public class BoissonController {
     @FXML
     public void onSelectMenu(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        String name = "Boisson";
-        double price = 0.0;
+        BoissonDto boisson = (BoissonDto) clickedButton.getUserData();
+
         String imageUrl = "/org/example/demo/images/logo.jpg";
 
-        try {
-            if (clickedButton.getGraphic() instanceof VBox vbox) {
-                if (vbox.getChildren().size() >= 3) {
-                    if (vbox.getChildren().get(1) instanceof Label nameLabel) {
-                        name = nameLabel.getText();
-                    }
-                    if (vbox.getChildren().get(2) instanceof Label priceLabel) {
-                        String priceText = priceLabel.getText()
-                                .replace(" €", "")
-                                .replace(",", ".")
-                                .trim();
-                        price = Double.parseDouble(priceText);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String name = (boisson != null && boisson.nom != null) ? boisson.nom : "Boisson";
+        double price = (boisson != null) ? boisson.prix : 0.0;
+
+        String description;
+        if (boisson != null && boisson.description != null && !boisson.description.isBlank()) {
+            description = boisson.description;
+        } else {
+            description = "No description.";
         }
 
+        String categoryLabel = "Boisson";
+        if (boisson != null && boisson.categorie != null) {
+            if (boisson.categorie.idCategorie == 1) categoryLabel = "Entrée";
+            else if (boisson.categorie.idCategorie == 2) categoryLabel = "Plat";
+            else if (boisson.categorie.idCategorie == 3) categoryLabel = "Boisson";
+            else if (boisson.categorie.idCategorie == 4) categoryLabel = "Dessert";
+        }
+
+        int id = (boisson != null) ? boisson.idPlat : 0;
+
         Product product = new Product(
-                400 + (int) (Math.random() * 100),
+                id,
                 name,
-                "Rafraîchissant.",
+                description,
                 price,
                 imageUrl,
-                "Boisson"
+                categoryLabel
         );
         SceneManager.getInstance().showProductDetails(product);
         updateTotal();

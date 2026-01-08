@@ -94,7 +94,9 @@ public class PlatsController {
                 }
 
                 for (PlatDto plat : plats) {
-                    grid.getChildren().add(createPlatCard(plat));
+                    if (plat != null && plat.disponible) {
+                        grid.getChildren().add(createPlatCard(plat));
+                    }
                 }
             }
 
@@ -145,7 +147,9 @@ public class PlatsController {
 
         vbox.getChildren().addAll(imgView, nameLbl, priceLbl);
 
+        // ✅ On stocke le plat dans le bouton pour le récupérer au clic
         btn.setGraphic(vbox);
+        btn.setUserData(plat);
 
         // Clic sur la carte = ouvrir popup détails
         btn.setOnAction(this::onSelectMenu);
@@ -158,37 +162,40 @@ public class PlatsController {
     @FXML
     public void onSelectMenu(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        String name = "Plat";
-        double price = 0.0;
+        PlatDto plat = (PlatDto) clickedButton.getUserData();
+
         String imageUrl = "/org/example/demo/images/logo.jpg";
 
-        try {
-            if (clickedButton.getGraphic() instanceof VBox vbox
-                    && vbox.getChildren().size() >= 3) {
+        String name = (plat != null && plat.nom != null) ? plat.nom : "Plat";
+        double price = (plat != null) ? plat.prix : 0.0;
 
-                if (vbox.getChildren().get(1) instanceof Label nameLabel) {
-                    name = nameLabel.getText();
-                }
-                if (vbox.getChildren().get(2) instanceof Label priceLabel) {
-                    String priceText = priceLabel.getText()
-                            .replace(" €", "")
-                            .replace(",", ".")
-                            .trim();
-                    price = Double.parseDouble(priceText);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        // ✅ Description venant de la BDD si présente
+        String description;
+        if (plat != null && plat.description != null && !plat.description.isBlank()) {
+            description = plat.description;
+        } else {
+            description = "Un plat savoureux et copieux.";
         }
 
+        String categoryLabel = "Plat";
+        if (plat != null && plat.categorie != null) {
+            if (plat.categorie.idCategorie == 1) categoryLabel = "Entrée";
+            else if (plat.categorie.idCategorie == 2) categoryLabel = "Plat";
+            else if (plat.categorie.idCategorie == 3) categoryLabel = "Boisson";
+            else if (plat.categorie.idCategorie == 4) categoryLabel = "Dessert";
+        }
+
+        int id = (plat != null) ? plat.idPlat : 0;
+
         Product product = new Product(
-                300 + (int) (Math.random() * 100),
+                id,
                 name,
-                "Un plat savoureux et copieux.",
+                description,
                 price,
                 imageUrl,
-                "Plat"
+                categoryLabel
         );
+
         SceneManager.getInstance().showProductDetails(product);
         updateTotal();
     }
@@ -204,8 +211,10 @@ public class PlatsController {
         SceneManager.getInstance().switchScene("cart");
     }
 
-    @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
-
+    @FXML
+    public void goToAccueil() throws IOException {
+        SceneManager.getInstance().switchScene("accueil");
+    }
 
     @FXML
     public void goToStarters() throws IOException {
