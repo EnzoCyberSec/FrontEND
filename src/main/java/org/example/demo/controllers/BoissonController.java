@@ -46,7 +46,7 @@ public class BoissonController {
     private static final Map<String, String> IMG_BY_KEY = Map.of(
             "asianbeer", "Asianbeer.png",
             "cocacola", "Cocacola.png",
-            "evian", "Evian.png",
+            "evian", "Mineralwater.png",
             "homemadeicedtea", "Homemadeicedtea.png",
             "lycheejuice", "Lycheejuice.png"
     );
@@ -75,7 +75,7 @@ public class BoissonController {
 
         // bonus: si la BDD contient "cocacola33cl" -> on reconnait "cocacola"
         if (key.contains("cocacola") || key.contains("coca")) return BASE + "Cocacola.png";
-        if (key.contains("evian")) return BASE + "Evian.png";
+        if (key.contains("evian")) return BASE + "Mineralwater.png";
         if (key.contains("asianbeer") || (key.contains("asian") && key.contains("beer"))) return BASE + "Asianbeer.png";
         if (key.contains("homemade") || (key.contains("iced") && key.contains("tea"))) return BASE + "Homemadeicedtea.png";
         if (key.contains("lychee") || key.contains("juice")) return BASE + "Lycheejuice.png";
