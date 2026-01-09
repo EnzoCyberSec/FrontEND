@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fr.isen.wokandroll.controllers.StatsController"
+            styleClass="root">
+
+    <top>
+        <VBox style="-fx-background-color: transparent; -fx-padding: 10 20;">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <ImageView styleClass="logoSmall" fitWidth="180" preserveRatio="true">
+                    <image><Image url="@../images/logo.jpg"/></image>
+                </ImageView>
+            </HBox>
+            <HBox alignment="CENTER">
+                <Label text="Statistiques" styleClass="pageTitle"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox spacing="0" style="-fx-background-color: transparent; -fx-padding: 0 0 0 16;">
+            <StackPane styleClass="sidebarWrapper">
+                <VBox styleClass="sidebar" spacing="10">
+                    <Label text="Menu" styleClass="sidebarTitle"/>
+                    <Button text="← Start Menu" styleClass="catBtn" onAction="#goBack"/>
+                </VBox>
+            </StackPane>
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+            <content>
+                <VBox spacing="30" styleClass="content" style="-fx-padding: 20;">
+
+                    <HBox spacing="30" alignment="CENTER_LEFT">
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 250; -fx-alignment: CENTER;">
+                            <Label text="Total Commandes" style="-fx-font-size: 18px; -fx-text-fill: #666;"/>
+                            <Label fx:id="nbCommandesLabel" text="..." style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #e46725;"/>
+                        </VBox>
+
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 20; -fx-min-width: 250; -fx-alignment: CENTER;">
+                            <Label text="Panier Moyen" style="-fx-font-size: 18px; -fx-text-fill: #666;"/>
+                            <Label fx:id="panierMoyenLabel" text="..." style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #22c55e;"/>
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="10">
+                        <Label text="🏆 Plats les plus vendus" styleClass="sectionTitle"/>
+                        <VBox fx:id="bestSellersList" spacing="10"
+                              style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);">
+                            <Label text="Chargement..." />
+                        </VBox>
+                    </VBox>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

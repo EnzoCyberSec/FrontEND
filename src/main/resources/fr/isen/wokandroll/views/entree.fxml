@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fr.isen.wokandroll.controllers.EntreeController"
+            styleClass="root">
+
+    <top>
+        <VBox style="-fx-background-color: transparent; -fx-padding: 10 20;">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <ImageView styleClass="logoSmall" fitWidth="180" preserveRatio="true">
+                    <image><Image url="@../images/logo.jpg"/></image>
+                </ImageView>
+            </HBox>
+            <HBox alignment="CENTER">
+                <Label fx:id="title" text="Our Starters" styleClass="pageTitle"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox spacing="0" style="-fx-background-color: transparent; -fx-padding: 0 0 0 16;">
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent; -fx-background: transparent;">
+                <content>
+                    <StackPane styleClass="sidebarWrapper">
+                        <VBox styleClass="sidebar" spacing="10">
+
+                            <Label text="Categories" styleClass="sidebarTitle"/>
+
+                            <Button text="Home" styleClass="catBtn" onAction="#goToAccueil">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image><Image url="@../images/icone/Home.png"/></image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Starters" styleClass="catBtn" onAction="#goToStarters">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image><Image url="@../images/icone/Starters.png"/></image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Main Dishes" styleClass="catBtn" onAction="#goToMainDishes">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image><Image url="@../images/icone/Maindishes.png"/></image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Desserts" styleClass="catBtn" onAction="#goToDesserts">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image><Image url="@../images/icone/Desserts.png"/></image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <Button text="Drinks" styleClass="catBtn" onAction="#goToDrinks">
+                                <graphic>
+                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                        <image><Image url="@../images/icone/Drinks.png"/></image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <VBox style="-fx-padding: 20 0 0 0;">
+                                <Button text="← Back" styleClass="catBtn" onAction="#goBack"/>
+                            </VBox>
+
+                        </VBox>
+                    </StackPane>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox styleClass="content">
+            <ScrollPane fitToWidth="true"
+                        hbarPolicy="AS_NEEDED"
+                        vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent; -fx-background: transparent;">
+                <content>
+                    <TilePane fx:id="grid"
+                              prefColumns="3"
+                              styleClass="grid"
+                              tileAlignment="TOP_LEFT"/>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 0 0 24 0;">
+            <StackPane styleClass="bottomWrapper">
+                <BorderPane styleClass="bottomBar">
+                    <center>
+                        <Button text="🛒 CART" styleClass="cartBtn" onAction="#goToCart"/>
+                    </center>
+                    <right>
+                        <Label fx:id="totalLabel" text="Total: €0.00" styleClass="totalText"/>
+                    </right>
+                </BorderPane>
+            </StackPane>
+        </HBox>
+    </bottom>
+
+</BorderPane>

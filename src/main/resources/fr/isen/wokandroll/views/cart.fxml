@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fr.isen.wokandroll.controllers.CartController"
+            styleClass="root">
+
+    <top>
+        <VBox spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="topbar">
+                <ImageView styleClass="logoSmall" fitWidth="180" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo.jpg"/>
+                    </image>
+                </ImageView>
+                <Label text="Your Cart" styleClass="pageTitle"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="10" styleClass="content" style="-fx-padding: 10 40 10 40;">
+            <Label text="Order summary" styleClass="sectionTitle"/>
+
+            <ScrollPane fitToWidth="true"
+                        style="-fx-background-color: transparent; -fx-background: transparent;"
+                        vbarPolicy="AS_NEEDED">
+                <content>
+                    <VBox fx:id="cartItemsContainer" spacing="15" style="-fx-padding: 10;">
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 0 0 24 0;">
+            <StackPane styleClass="bottomWrapper">
+                <BorderPane styleClass="cartBottomBar">
+
+                    <left>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Total to pay:" styleClass="cartTotalLabel"/>
+                            <Label fx:id="totalLabel" text="0.00 €" styleClass="cartTotalValue"/>
+                        </HBox>
+                    </left>
+
+                    <center>
+                        <HBox spacing="16" alignment="CENTER" styleClass="cartActionsBar">
+                            <Button text="← Add more items"
+                                    styleClass="cartActionBtn, cartActionSecondary, cartActionWide"
+                                    onAction="#goBack"/>
+
+                            <Button text="🗑️ Clear"
+                                    styleClass="cartActionBtn, cartActionSecondary"
+                                    onAction="#clearCart"/>
+
+                            <Button text="Pay &amp; Order ➤"
+                                    styleClass="cartActionBtn, cartActionPrimary, cartActionWide"
+                                    onAction="#checkout"/>
+                        </HBox>
+                    </center>
+
+                </BorderPane>
+            </StackPane>
+        </HBox>
+    </bottom>
+
+</BorderPane>

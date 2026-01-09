@@ -85,7 +85,7 @@
                         <configuration>
                             <!-- MODULE / MAIN CLASS -->
                             <mainClass>
-                                org.example.demo/org.example.demo.HelloApplication
+                                fr.isen.wokandroll/fr.isen.wokandroll.HelloApplication
                             </mainClass>
                         </configuration>
                     </execution>
