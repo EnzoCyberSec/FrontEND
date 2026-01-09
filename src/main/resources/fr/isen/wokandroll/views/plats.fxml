@@ -19,7 +19,7 @@
     <top>
         <VBox style="-fx-background-color: transparent; -fx-padding: 10 20;">
             <HBox alignment="CENTER_LEFT" spacing="20">
-                <ImageView styleClass="logoSmall" fitWidth="180" preserveRatio="true">
+                <ImageView styleClass="logoSmall" fitWidth="200" preserveRatio="true">
                     <image>
                         <Image url="@../images/logo.jpg"/>
                     </image>
@@ -33,9 +33,7 @@
 
     <left>
         <VBox spacing="0" style="-fx-background-color: transparent; -fx-padding: 0 0 0 16;">
-            <ScrollPane fitToWidth="true"
-                        hbarPolicy="NEVER"
-                        vbarPolicy="AS_NEEDED"
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
                         style="-fx-background-color: transparent; -fx-background: transparent;">
                 <content>
                     <StackPane styleClass="sidebarWrapper">
@@ -45,7 +43,7 @@
 
                             <Button text="Home" styleClass="catBtn" onAction="#goToAccueil">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image>
                                             <Image url="@../images/icone/Home.png"/>
                                         </image>
@@ -55,7 +53,7 @@
 
                             <Button text="Starters" styleClass="catBtn" onAction="#goToStarters">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image>
                                             <Image url="@../images/icone/Starters.png"/>
                                         </image>
@@ -65,7 +63,7 @@
 
                             <Button text="Main Dishes" styleClass="catBtn" onAction="#goToMainDishes">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image>
                                             <Image url="@../images/icone/Maindishes.png"/>
                                         </image>
@@ -75,7 +73,7 @@
 
                             <Button text="Desserts" styleClass="catBtn" onAction="#goToDesserts">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image>
                                             <Image url="@../images/icone/Desserts.png"/>
                                         </image>
@@ -85,7 +83,7 @@
 
                             <Button text="Drinks" styleClass="catBtn" onAction="#goToDrinks">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image>
                                             <Image url="@../images/icone/Drinks.png"/>
                                         </image>
@@ -107,7 +105,7 @@
     <center>
         <VBox styleClass="content">
             <ScrollPane fitToWidth="true"
-                        hbarPolicy="AS_NEEDED"
+                        hbarPolicy="NEVER"
                         vbarPolicy="AS_NEEDED"
                         style="-fx-background-color: transparent; -fx-background: transparent;">
                 <content>
