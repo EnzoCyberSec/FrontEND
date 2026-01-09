@@ -40,11 +40,13 @@
                         <Image url="@../images/fr.png"/>
                     </image>
                 </ImageView>
-                <ImageView fitHeight="40" preserveRatio="true">
-                    <image>
-                        <Image url="@../images/en.png"/>
-                    </image>
-                </ImageView>
+                <StackPane styleClass="langSelected">
+                    <ImageView fitHeight="40" preserveRatio="true" styleClass="langIcon">
+                        <image>
+                            <Image url="@../images/en.png"/>
+                        </image>
+                    </ImageView>
+                </StackPane>
                 <ImageView fitHeight="40" preserveRatio="true">
                     <image>
                         <Image url="@../images/es.png"/>

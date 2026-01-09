@@ -657,3 +657,16 @@
 .confirmBottom {
     -fx-padding: 0 0 26 0;
 }
+
+/* Language flags */
+.langSelected {
+    -fx-padding: 6;
+    -fx-border-color: #22c55e;
+    -fx-border-width: 3;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-background-color: rgba(34,197,94,0.10);
+}
+.langIcon {
+    -fx-cursor: hand;
+}
