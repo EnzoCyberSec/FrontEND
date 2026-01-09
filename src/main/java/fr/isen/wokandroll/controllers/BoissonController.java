@@ -45,7 +45,7 @@ public class BoissonController {
         public CategorieDto categorie;
     }
 
-    // --- Gestion des images (Logique JB) ---
+    // Gestion des images
     private static final String BASE = "/fr/isen/wokandroll/images/boissons/";
     private static final String DEFAULT_IMG = BASE + "default.png";
 
@@ -70,7 +70,7 @@ public class BoissonController {
         }
     }
 
-    // --- Logique de récupération d'image (JB) ---
+    // --- Logique de récupération d'image ---
 
     // Vérifie si un fichier existe dans les ressources
     private String firstExisting(String... fileNames) {
@@ -144,7 +144,7 @@ public class BoissonController {
         return iv;
     }
 
-    // --- Chargement API (Structure Enzo + Boucle JB) ---
+    // --- Chargement API ---
 
     private void loadBoissonsFromApi() {
         if (grid == null) {
@@ -228,7 +228,6 @@ public class BoissonController {
         String imgPath = DEFAULT_IMG;
         BoissonDto b = null;
 
-        // Récupération sécurisée
         try {
             Object[] data = (Object[]) btn.getUserData();
             imgPath = (String) data[0];
@@ -241,7 +240,6 @@ public class BoissonController {
                 ? b.description
                 : "Rafraîchissant.";
 
-        // Utilisation du vrai ID de la BDD (correctif par rapport au code JB qui utilisait un Random)
         int id = (b != null) ? b.idPlat : 0;
 
         Product product = new Product(

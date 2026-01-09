@@ -1,13 +1,13 @@
 package fr.isen.wokandroll.managers;
 
+import fr.isen.wokandroll.controllers.ProductDetailsController;
+import fr.isen.wokandroll.models.Product;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import fr.isen.wokandroll.controllers.ProductDetailsController;
-import fr.isen.wokandroll.models.Product;
 
 import java.io.IOException;
 import java.net.URL;
@@ -16,13 +16,15 @@ public class SceneManager {
     private static SceneManager instance;
     private Stage stage;
 
-    // Taille de la fenêtre (Full HD par défaut)
+    // Constantes de configuration
     private static final double SCENE_WIDTH = 1920;
     private static final double SCENE_HEIGHT = 1080;
+    private static final String VIEWS_PATH = "/fr/isen/wokandroll/views/";
+    private static final String CSS_PATH = "/fr/isen/wokandroll/styles/menu.css";
 
     private SceneManager() {}
 
-    public static SceneManager getInstance() {
+    public static synchronized SceneManager getInstance() {
         if (instance == null) {
             instance = new SceneManager();
         }
@@ -31,75 +33,111 @@ public class SceneManager {
 
     public void initialize(Stage stage) {
         this.stage = stage;
+        this.stage.setTitle("Wok & Roll");
+        // Optionnel : this.stage.setResizable(false);
     }
 
+    // ========================
+    //      NAVIGATION
+    // ========================
+
     /**
-     * Charge la toute première scène (généralement home).
-     * Applique la feuille de style globale menu.css.
+     * Charge la scène initiale (crée une nouvelle Scene).
      */
-    public void loadInitialScene(String sceneName) throws IOException {
-        Parent root = loadFXML(sceneName);
-        Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
-        addCss(scene, "/fr/isen/wokandroll/styles/menu.css");
-        stage.setScene(scene);
-        stage.show();
+    public void loadInitialScene(String viewName) {
+        try {
+            Parent root = loadRoot(viewName);
+            Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
+            addCss(scene);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            handleError("Erreur lors du chargement initial (" + viewName + ")", e);
+        }
     }
 
     /**
-     * Change complètement la scène affichée dans la fenêtre principale.
-     * Exemple : switchScene("accueil"), switchScene("panier"), switchScene("stats").
+     * Remplace le contenu de la scène actuelle (garde la fenêtre et les dimensions).
      */
-    public void switchScene(String sceneName) throws IOException {
-        Parent root = loadFXML(sceneName);
-        stage.getScene().setRoot(root);
+    public void switchScene(String viewName) {
+        try {
+            Parent root = loadRoot(viewName);
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            handleError("Erreur lors du changement de scène vers : " + viewName, e);
+        }
     }
 
     /**
-     * Ouvre la fenêtre POPUP modale pour afficher les détails d'un produit.
-     * Le fond est transparent pour permettre des effets visuels arrondis/ombres.
+     * Affiche le popup de détails produit (Modal & Transparent).
      */
     public void showProductDetails(Product product) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/isen/wokandroll/views/product-details.fxml"));
+            // 1. Charger le FXML et récupérer le contrôleur
+            FXMLLoader loader = getLoader("product-details");
             Parent root = loader.load();
 
-            // Injection du produit dans le contrôleur du popup
             ProductDetailsController controller = loader.getController();
             controller.setProduct(product);
 
-            Stage popupStage = new Stage();
-            popupStage.initOwner(stage);
-            popupStage.initModality(Modality.WINDOW_MODAL); // Bloque la fenêtre principale tant que ouvert
-            popupStage.initStyle(StageStyle.TRANSPARENT);   // Style transparent (pas de barre Windows classique)
-
-            Scene scene = new Scene(root);
-            scene.setFill(null); // Important pour la transparence du PNG de fond/border-radius
-            popupStage.setScene(scene);
+            // 2. Configurer le Stage du popup
+            Stage popupStage = createTransparentModalStage(root);
             popupStage.showAndWait();
 
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erreur lors de l'ouverture du Popup Produit : " + e.getMessage());
+            handleError("Impossible d'ouvrir le détail du produit", e);
         }
     }
 
-    // --- Méthodes utilitaires privées ---
+    // ========================
+    //      OUTILS PRIVÉS
+    // ========================
 
-    private Parent loadFXML(String sceneName) throws IOException {
-        String fxmlPath = "/fr/isen/wokandroll/views/" + sceneName + ".fxml";
-        URL resource = getClass().getResource(fxmlPath);
-        if (resource == null) throw new IOException("Fichier FXML introuvable : " + fxmlPath);
-        FXMLLoader loader = new FXMLLoader(resource);
-        return loader.load();
+    /**
+     * Stage modal et transparent pour les popups.
+     */
+    private Stage createTransparentModalStage(Parent root) {
+        Stage popupStage = new Stage();
+        popupStage.initOwner(stage);
+        popupStage.initModality(Modality.WINDOW_MODAL);
+        popupStage.initStyle(StageStyle.TRANSPARENT);
+
+        Scene scene = new Scene(root);
+        scene.setFill(null);
+        popupStage.setScene(scene);
+
+        return popupStage;
     }
 
-    private void addCss(Scene scene, String cssPath) {
-        URL resource = getClass().getResource(cssPath);
+    /**
+     * Récupère un FXMLLoader configuré avec le bon chemin.
+     */
+    private FXMLLoader getLoader(String viewName) throws IOException {
+        String path = VIEWS_PATH + viewName + ".fxml";
+        URL resource = getClass().getResource(path);
+        if (resource == null) throw new IOException("Fichier FXML introuvable : " + path);
+        return new FXMLLoader(resource);
+    }
+
+    /**
+     * Raccourci pour charger directement la racine (Parent).
+     */
+    private Parent loadRoot(String viewName) throws IOException {
+        return getLoader(viewName).load();
+    }
+
+    private void addCss(Scene scene) {
+        URL resource = getClass().getResource(CSS_PATH);
         if (resource != null) {
             scene.getStylesheets().add(resource.toExternalForm());
         } else {
-            System.err.println("Fichier CSS introuvable : " + cssPath);
+            System.err.println("CSS introuvable : " + CSS_PATH);
         }
+    }
+
+    private void handleError(String message, Exception e) {
+        System.err.println(message);
+        e.printStackTrace();
     }
 
     public Stage getStage() {

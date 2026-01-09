@@ -18,7 +18,7 @@ public class HelloController {
         System.out.println("Connexion (Fonctionnalité à implémenter)");
     }
 
-    // Ajout de la méthode de JB pour le bouton Stats du FXML
+    // Bouton Stats du FXML
     @FXML
     public void goToStats() throws IOException {
         SceneManager.getInstance().switchScene("stats");

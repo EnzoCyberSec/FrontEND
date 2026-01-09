@@ -63,12 +63,12 @@ public class DessertController {
     }
 
     // =================================================================================
-    // LOGIQUE IMAGE (Apport de JB)
+    // LOGIQUE IMAGE
     // =================================================================================
 
     /**
      * Transforme le nom du dessert en nom de fichier.
-     * Ex: "Coconut pearls" -> "coconut pearls" -> "coconutpearls" -> "Coconutpearls.png"
+     * Exemple : "Coconut pearls" -> "coconut pearls" -> "coconutpearls" -> "Coconutpearls.png"
      */
     private String imageForDessert(DessertDto d) {
         if (d == null || d.nom == null || d.nom.isBlank()) {
@@ -84,7 +84,7 @@ public class DessertController {
 
         if (s.isEmpty()) return DEFAULT_IMG;
 
-        // 4. Première lettre majuscule (Convention de nommage des fichiers de JB)
+        // 4. Première lettre majuscule
         String fileName = Character.toUpperCase(s.charAt(0)) + s.substring(1);
         String finalPath = BASE_PATH + fileName + ".png";
 
@@ -129,7 +129,7 @@ public class DessertController {
     }
 
     // =================================================================================
-    // CHARGEMENT API (Enzo)
+    // CHARGEMENT API
     // =================================================================================
 
     private void loadDessertsFromApi() {

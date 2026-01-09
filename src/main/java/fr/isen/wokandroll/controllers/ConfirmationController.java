@@ -14,43 +14,43 @@ public class ConfirmationController {
     @FXML private Label orderNumber;
     @FXML private Label estimatedTime;
 
-    // Variable used to pass the order ID from CartController
+    // Variable utilisée pour transmettre l'identifiant de la commande depuis CartController
     public static int lastOrderId = 0;
 
     @FXML
     public void initialize() {
-        // 1. Order number display handling
+        // 1. Gestion de l'affichage du numéro de commande
         int idToDisplay = (lastOrderId != 0)
                 ? lastOrderId
                 : (1000 + new Random().nextInt(9000));
 
-        // Reset for the next order
+        // Réinitialisation pour la prochaine commande
         lastOrderId = 0;
 
         setOrderData(idToDisplay, "15–20 minutes");
 
-        // 2. Start the 5-second countdown
+        // 2. Démarrage du compte à rebours de 5 secondes
         startAutoRedirect();
     }
 
     /**
-     * Waits 5 seconds then redirects to the home screen ("Tap to Start").
+     * Attend 5 secondes puis redirige vers l'écran d'accueil.
      */
     private void startAutoRedirect() {
-        // 5-second duration
+        // Durée de 5 secondes
         PauseTransition delay = new PauseTransition(Duration.seconds(5));
 
-        // Action executed when the timer ends
+        // Action exécutée à la fin du délai imparti
         delay.setOnFinished(event -> {
             try {
-                // Simulates a click on "New Order" to return to 'home'
+                // Simule un clic sur « Nouvelle commande » pour revenir à l'accueil
                 newOrder();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
 
-        // Start the timer
+        // Lance le timer
         delay.play();
     }
 

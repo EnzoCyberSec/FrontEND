@@ -64,7 +64,7 @@ public class EntreeController {
     }
 
     // =================================================================================
-    // LOGIQUE IMAGE (Apport de JB)
+    // LOGIQUE IMAGE
     // =================================================================================
 
     /**
@@ -86,7 +86,7 @@ public class EntreeController {
 
         if (s.isEmpty()) return DEFAULT_IMG;
 
-        // 5. Première lettre majuscule (Convention JB)
+        // 5. Première lettre majuscule
         String fileName = Character.toUpperCase(s.charAt(0)) + s.substring(1);
         String imagePath = BASE_PATH + fileName + ".png";
 
@@ -130,7 +130,7 @@ public class EntreeController {
     }
 
     // =================================================================================
-    // CHARGEMENT API (Enzo)
+    // CHARGEMENT API
     // =================================================================================
 
     private void loadEntreesFromApi() {
@@ -227,7 +227,7 @@ public class EntreeController {
         String name = (plat != null && plat.nom != null) ? plat.nom : "Entrée";
         double price = (plat != null) ? plat.prix : 0.0;
 
-        // Utilisation de la vraie description BDD
+        // Utilisation de la description BDD
         String description = (plat != null && plat.description != null && !plat.description.isBlank())
                 ? plat.description
                 : "Une entrée savoureuse pour bien commencer.";

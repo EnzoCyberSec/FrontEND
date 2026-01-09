@@ -64,11 +64,11 @@ public class PlatsController {
     }
 
     // =================================================================================
-    // LOGIQUE IMAGE (Apport de JB)
+    // LOGIQUE IMAGE
     // =================================================================================
 
     /**
-     * Transforme "Beef lok lak" -> "Beefloklak.png" et vérifie l'existence.
+     * Transforme "Beef lok lak" -> "Beefloklak.png" et vérifie s'il existe.
      */
     private String imageForPlat(PlatDto plat) {
         if (plat == null || plat.nom == null || plat.nom.isBlank()) {
@@ -129,7 +129,7 @@ public class PlatsController {
     }
 
     // =================================================================================
-    // CHARGEMENT API (Enzo)
+    // CHARGEMENT API
     // =================================================================================
 
     private void loadPlatsFromApi() {

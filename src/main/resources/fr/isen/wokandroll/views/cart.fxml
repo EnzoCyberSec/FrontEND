@@ -67,7 +67,8 @@
                                     styleClass="cartActionBtn, cartActionSecondary"
                                     onAction="#clearCart"/>
 
-                            <Button text="Pay &amp; Order ➤"
+                            <Button fx:id="checkoutButton"
+                                    text="Pay &amp; Order ➤"
                                     styleClass="cartActionBtn, cartActionPrimary, cartActionWide"
                                     onAction="#checkout"/>
                         </HBox>

@@ -13,7 +13,6 @@
     -fx-alignment: top-left;
     -fx-padding: 10 20 10 20;
     -fx-max-height: 120;
-    /* Suppression du translate hasardeux de common.css pour privilégier le layout naturel */
 }
 
 .logoSmall {
@@ -26,7 +25,6 @@
     -fx-font-weight: bold;
     -fx-text-fill: #333;
     -fx-translate-y: -100;
-    /* On garde le padding mais on évite les translates négatifs excessifs */
     -fx-padding: 10 0 20 0;
 }
 
@@ -37,7 +35,7 @@
 }
 
 /* ==========================================================================
-   3. SIDEBAR & NAVIGATION (Priorité au style Menu.css pour le layout)
+   3. SIDEBAR & NAVIGATION
    ========================================================================== */
 .sidebar {
     -fx-background-color: #fff2e5;
@@ -203,7 +201,6 @@
 /* ==========================================================================
    6. BARRE DU BAS (Panier & Total)
    ========================================================================== */
-/* On utilise le style de Menu.css qui est mieux calé que celui de common.css */
 .bottomBar {
     -fx-background-color: white;
     -fx-background-radius: 20 20 0 0;
@@ -548,7 +545,7 @@
     -fx-background-color: transparent;
 }
 
-/* ===== Boutons panier (inspirés du cartBtn) ===== */
+/* ===== Boutons panier ===== */
 .cartActionBtn {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
@@ -560,7 +557,6 @@
     -fx-cursor: hand;
     -fx-background-insets: 0;
 
-    /* IMPORTANT: enlève le contour bleu focus */
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 

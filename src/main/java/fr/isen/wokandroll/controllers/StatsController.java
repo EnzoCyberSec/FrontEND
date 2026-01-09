@@ -65,7 +65,7 @@ public class StatsController {
     @FXML public void goBack() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
     @FXML public void goToCart() throws IOException { SceneManager.getInstance().switchScene("cart"); }
 
-    // Méthodes menu (si utilisées dans le FXML)
+    // Méthodes menu
     @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
     @FXML public void goToStarters() throws IOException { SceneManager.getInstance().switchScene("entree"); }
     @FXML public void goToMainDishes() throws IOException { SceneManager.getInstance().switchScene("plats"); }

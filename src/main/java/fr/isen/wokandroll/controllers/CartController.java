@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox;
 import fr.isen.wokandroll.managers.SceneManager;
 import fr.isen.wokandroll.models.Cart;
 import fr.isen.wokandroll.models.CartItem;
-import fr.isen.wokandroll.models.Option; // Import ajouté pour les options
+import fr.isen.wokandroll.models.Option;
 import fr.isen.wokandroll.services.OrderApiService;
 
 import java.io.IOException;
@@ -25,6 +25,7 @@ public class CartController {
 
     @FXML private VBox cartItemsContainer;
     @FXML private Label totalLabel;
+    @FXML private Button checkoutButton;
 
     @FXML
     public void initialize() {
@@ -40,6 +41,11 @@ public class CartController {
 
         cartItemsContainer.getChildren().clear();
         Cart cart = Cart.getInstance();
+
+        // Gestion de l'état du bouton "Pay & Order"
+        if (checkoutButton != null) {
+            checkoutButton.setDisable(cart.getItems().isEmpty());
+        }
 
         if (cart.getItems().isEmpty()) {
             Label emptyLabel = new Label("Your cart is empty ☹");
@@ -102,7 +108,7 @@ public class CartController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // --- 3. Quantity Controls (MODIFIÉ) ---
+        // --- 3. Quantity Controls ---
         HBox qtyBox = new HBox(8);
         qtyBox.setAlignment(Pos.CENTER);
 
@@ -154,7 +160,7 @@ public class CartController {
             refreshCartDisplay();
         });
 
-        // Ajout de qtyBox à la place de l'ancien label qty
+        // Ajout des éléments à la carte
         card.getChildren().addAll(
                 imgView, infoBox, spacer, qtyBox, subTotalLabel, deleteBtn
         );
@@ -211,10 +217,6 @@ public class CartController {
         Cart cart = Cart.getInstance();
 
         if (cart.getItems().isEmpty()) {
-            showInfoAlert(
-                    "Empty cart",
-                    "Your cart is empty. You cannot place an order."
-            );
             return;
         }
 

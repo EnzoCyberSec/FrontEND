@@ -46,7 +46,7 @@ public class AccueilController {
     }
 
     // =================================================================================
-    // LOGIQUE DE GESTION DES IMAGES (Apport de JB)
+    // LOGIQUE DE GESTION DES IMAGES
     // =================================================================================
 
     // Dossiers d'images + images par défaut (Fallback)
@@ -160,7 +160,7 @@ public class AccueilController {
     }
 
     // =================================================================================
-    // CRÉATION DES CARTES PRODUIT (Fusion UI Enzo + Logique Image JB)
+    // CRÉATION DES CARTES PRODUIT
     // =================================================================================
 
     private StackPane createProductCard(PlatDto plat) {
@@ -172,7 +172,7 @@ public class AccueilController {
         VBox vbox = new VBox();
         vbox.getStyleClass().add("productCard");
 
-        // 1. Déterminer la bonne image grâce à la logique de JB
+        // 1. Déterminer la bonne image
         String imagePath = imagePathFor(plat);
 
         // 2. Créer l'ImageView carrée et centrée
@@ -197,7 +197,7 @@ public class AccueilController {
         return root;
     }
 
-    // --- Méthodes utilitaires pour les images (JB) ---
+    // --- Méthodes utilitaires pour les images ---
 
     private String imagePathFor(PlatDto p) {
         int cat = (p != null && p.categorie != null) ? p.categorie.idCategorie : 0;
@@ -225,7 +225,7 @@ public class AccueilController {
         if (base.equals(BASE_BOISSONS)) {
             String key = name.toLowerCase().replaceAll("[^a-z]", "");
             if (key.contains("cocacola")) {
-                String p = base + "CocaCola.png"; // Nom exact du fichier
+                String p = base + "CocaCola.png";
                 if (getClass().getResource(p) != null) return p;
             }
         }
@@ -239,7 +239,7 @@ public class AccueilController {
         return fallback;
     }
 
-    // Crée une image rognée en carré pour un rendu uniforme
+    // Crée une image rognée en carré
     private ImageView squareImage(String resourcePath, double size) {
         ImageView iv = new ImageView();
         iv.getStyleClass().add("productImg");
@@ -274,7 +274,7 @@ public class AccueilController {
         PlatDto plat = null;
         String imageUrl = DEFAULT_PLATS;
 
-        // Récupération sécurisée des données stockées dans le bouton
+        // Récupération des données stockées dans le bouton
         try {
             Object[] data = (Object[]) clickedButton.getUserData();
             plat = (PlatDto) data[0];
@@ -302,7 +302,7 @@ public class AccueilController {
                 name,
                 description,
                 price,
-                imageUrl, // On passe la vraie URL d'image ici
+                imageUrl,
                 categoryLabel
         );
 

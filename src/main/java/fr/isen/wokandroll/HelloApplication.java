@@ -9,10 +9,10 @@ import java.io.IOException;
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        // Initialiser SceneManager avec le stage AVANT de charger la première scène
+        // Initialisation de SceneManager
         SceneManager.getInstance().initialize(stage);
 
-        // Charger home.fxml via SceneManager
+        // Chargement de home.fxml via SceneManager
         SceneManager.getInstance().loadInitialScene("home");
 
         stage.setTitle("Wok & Roll");

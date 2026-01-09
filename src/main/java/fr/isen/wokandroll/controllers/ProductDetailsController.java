@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*; // Importe Button, CheckBox, Label, RadioButton, ToggleGroup, ButtonBase
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -37,8 +37,6 @@ public class ProductDetailsController {
     private int quantity = 1;
     private double basePrice;
 
-    // MODIFICATION : On change List<CheckBox> en List<ButtonBase> pour stocker CheckBox ET RadioButton
-    // ButtonBase est la classe parente commune qui gère le texte, les actions, etc.
     private final List<ButtonBase> optionControls = new ArrayList<>();
 
     private Label optionsTitleLabel;
@@ -149,7 +147,6 @@ public class ProductDetailsController {
 
     private void displayOptions(Option[] options) {
         Map<String, VBox> groups = new LinkedHashMap<>();
-        // MODIFICATION : Map pour gérer les ToggleGroups par type (pour que les RadioButtons fonctionnent ensemble)
         Map<String, ToggleGroup> toggleGroups = new HashMap<>();
 
         for (Option opt : options) {
@@ -168,7 +165,6 @@ public class ProductDetailsController {
                 optionsContainer.getChildren().add(groupBox);
             }
 
-            // MODIFICATION : Choix du composant (RadioButton ou CheckBox)
             ButtonBase selector;
 
             if ("SPICE_LEVEL".equals(typeKey)) {
@@ -215,7 +211,6 @@ public class ProductDetailsController {
         productPrice.setText(String.format("%.2f €", unitPrice));
     }
 
-    // MODIFICATION : Méthode utilitaire pour vérifier si un bouton est sélectionné
     private boolean isControlSelected(ButtonBase control) {
         if (control instanceof CheckBox) {
             return ((CheckBox) control).isSelected();
