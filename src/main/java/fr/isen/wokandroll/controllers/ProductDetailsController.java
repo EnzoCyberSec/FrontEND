@@ -5,9 +5,7 @@ import com.google.gson.GsonBuilder;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button; // AJOUT
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*; // Importe Button, CheckBox, Label, RadioButton, ToggleGroup, ButtonBase
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -33,14 +31,16 @@ public class ProductDetailsController {
     @FXML private Label quantityLabel;
     @FXML private VBox optionsContainer;
 
-    // AJOUT : Référence au bouton d'ajout (nécessite fx:id="addToCartBtn" dans le FXML)
     @FXML private Button addToCartBtn;
 
     private Product product;
     private int quantity = 1;
     private double basePrice;
 
-    private final List<CheckBox> optionCheckBoxes = new ArrayList<>();
+    // MODIFICATION : On change List<CheckBox> en List<ButtonBase> pour stocker CheckBox ET RadioButton
+    // ButtonBase est la classe parente commune qui gère le texte, les actions, etc.
+    private final List<ButtonBase> optionControls = new ArrayList<>();
+
     private Label optionsTitleLabel;
 
     @FXML
@@ -60,29 +60,21 @@ public class ProductDetailsController {
         quantityLabel.setText("1");
         productName.setText(product.getName());
 
-        // --- LOGIQUE DE DISPONIBILITÉ (AJOUT) ---
         if (!product.isAvailable()) {
-            // Cas INDISPONIBLE
             productPrice.setText("Unavailable");
-            // Style rouge pour alerter l'utilisateur
             productPrice.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: red;");
-
             if (addToCartBtn != null) {
-                addToCartBtn.setDisable(true); // Désactive le bouton
+                addToCartBtn.setDisable(true);
                 addToCartBtn.setText("Out of stock");
             }
         } else {
-            // Cas DISPONIBLE
             productPrice.setText(String.format("%.2f €", basePrice));
-            // On restaure le style normal (orange/défaut)
             productPrice.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #e46725;");
-
             if (addToCartBtn != null) {
-                addToCartBtn.setDisable(false); // Active le bouton
+                addToCartBtn.setDisable(false);
                 addToCartBtn.setText("Add to cart");
             }
         }
-        // ----------------------------------------
 
         if (product.getDescription() != null && !product.getDescription().isEmpty()) {
             productDescription.setText(product.getDescription());
@@ -102,7 +94,6 @@ public class ProductDetailsController {
         if (isExcluded) {
             if (optionsContainer != null) optionsContainer.getChildren().clear();
         } else {
-            // On ne charge les options que si le produit est disponible (optionnel, mais plus propre)
             if (product.isAvailable()) {
                 loadOptionsFromApi(product.getId());
             } else if (optionsContainer != null) {
@@ -130,7 +121,7 @@ public class ProductDetailsController {
     private void loadOptionsFromApi(int platId) {
         if (optionsContainer == null) return;
         optionsContainer.getChildren().setAll(optionsTitleLabel);
-        optionCheckBoxes.clear();
+        optionControls.clear(); // On vide la nouvelle liste
 
         HttpURLConnection conn = null;
         try {
@@ -144,7 +135,6 @@ public class ProductDetailsController {
             try (InputStream is = conn.getInputStream();
                  InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
                 Gson gson = new GsonBuilder().create();
-                // On charge directement dans notre modèle Option
                 Option[] options = gson.fromJson(reader, Option[].class);
                 if (options != null && options.length > 0) {
                     displayOptions(options);
@@ -159,6 +149,8 @@ public class ProductDetailsController {
 
     private void displayOptions(Option[] options) {
         Map<String, VBox> groups = new LinkedHashMap<>();
+        // MODIFICATION : Map pour gérer les ToggleGroups par type (pour que les RadioButtons fonctionnent ensemble)
+        Map<String, ToggleGroup> toggleGroups = new HashMap<>();
 
         for (Option opt : options) {
             if (opt == null) continue;
@@ -176,12 +168,28 @@ public class ProductDetailsController {
                 optionsContainer.getChildren().add(groupBox);
             }
 
-            CheckBox cb = new CheckBox(formatOptionLabel(opt));
-            cb.setUserData(opt); // IMPORTANT : On stocke l'objet Option
-            cb.setOnAction(e -> updateDisplayedPrice());
+            // MODIFICATION : Choix du composant (RadioButton ou CheckBox)
+            ButtonBase selector;
 
-            groupBox.getChildren().add(cb);
-            optionCheckBoxes.add(cb);
+            if ("SPICE_LEVEL".equals(typeKey)) {
+                // Pour le piment, on utilise un RadioButton
+                RadioButton rb = new RadioButton(formatOptionLabel(opt));
+
+                // On récupère ou crée le groupe pour ce type d'option
+                ToggleGroup tg = toggleGroups.computeIfAbsent(typeKey, k -> new ToggleGroup());
+                rb.setToggleGroup(tg);
+
+                selector = rb;
+            } else {
+                // Pour le reste, on garde la CheckBox
+                selector = new CheckBox(formatOptionLabel(opt));
+            }
+
+            selector.setUserData(opt);
+            selector.setOnAction(e -> updateDisplayedPrice());
+
+            groupBox.getChildren().add(selector);
+            optionControls.add(selector); // On ajoute à la liste générique
         }
     }
 
@@ -207,11 +215,22 @@ public class ProductDetailsController {
         productPrice.setText(String.format("%.2f €", unitPrice));
     }
 
+    // MODIFICATION : Méthode utilitaire pour vérifier si un bouton est sélectionné
+    private boolean isControlSelected(ButtonBase control) {
+        if (control instanceof CheckBox) {
+            return ((CheckBox) control).isSelected();
+        } else if (control instanceof RadioButton) {
+            return ((RadioButton) control).isSelected();
+        }
+        return false;
+    }
+
     private double computeSelectedOptionsExtra() {
         double extra = 0.0;
-        for (CheckBox cb : optionCheckBoxes) {
-            if (cb.isSelected()) {
-                Option opt = (Option) cb.getUserData();
+        // On parcourt la liste générique
+        for (ButtonBase control : optionControls) {
+            if (isControlSelected(control)) {
+                Option opt = (Option) control.getUserData();
                 extra += opt.getPrix();
             }
         }
@@ -219,7 +238,6 @@ public class ProductDetailsController {
     }
 
     @FXML private void increaseQuantity() {
-        // On bloque l'augmentation si on atteint 9
         if (quantity < 9) {
             quantity++;
             quantityLabel.setText(String.valueOf(quantity));
@@ -235,7 +253,6 @@ public class ProductDetailsController {
 
     @FXML
     private void addToCart() {
-        // AJOUT : Sécurité supplémentaire
         if (product == null || !product.isAvailable()) return;
 
         double extra = computeSelectedOptionsExtra();
@@ -244,10 +261,10 @@ public class ProductDetailsController {
         List<Option> selectedOptions = new ArrayList<>();
         List<String> selectedLabels = new ArrayList<>();
 
-        // 1. Récupération des options cochées
-        for (CheckBox cb : optionCheckBoxes) {
-            if (cb.isSelected()) {
-                Option opt = (Option) cb.getUserData();
+        // 1. Récupération des options cochées (générique)
+        for (ButtonBase control : optionControls) {
+            if (isControlSelected(control)) {
+                Option opt = (Option) control.getUserData();
                 selectedOptions.add(opt);
                 selectedLabels.add(opt.getLibelle());
             }
@@ -260,8 +277,6 @@ public class ProductDetailsController {
             finalDescription = (finalDescription == null ? "" : finalDescription) + optionsText;
         }
 
-        // On crée un clone pour le panier
-        // Note: on réutilise product.getCategory() et autres
         Product pWithOptions = new Product(
                 product.getId(),
                 product.getName(),
@@ -269,10 +284,9 @@ public class ProductDetailsController {
                 unitPrice,
                 product.getImageUrl(),
                 product.getCategory(),
-                true // Dans le panier, l'article est considéré comme "validé/disponible" à l'instant T
+                true
         );
 
-        // 3. IMPORTANT : On passe la liste des options au panier
         Cart.getInstance().addItem(pWithOptions, quantity, selectedOptions);
 
         closeWindow();
