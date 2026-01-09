@@ -1,9 +1,18 @@
 /* ==========================================================================
-   1. GLOBAL & FONDATIONS (Fusion Common + Menu)
+   1. GLOBAL & FONDATIONS
    ========================================================================== */
 .root {
     -fx-background-color: #f8ecd9;
     -fx-font-family: 'Segoe UI', sans-serif;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+    -fx-visible: false;
+}
+.scroll-pane {
+    -fx-fit-to-width: true; /* Force le contenu à s'adapter à la largeur */
 }
 
 /* ==========================================================================
@@ -12,16 +21,16 @@
 .topbar {
     -fx-alignment: top-left;
     -fx-padding: 10 20 10 20;
-    -fx-max-height: 120;
+    -fx-max-height: 180;
 }
 
 .logoSmall {
-    -fx-fit-width: 180;
+    -fx-fit-width: 300;
     -fx-preserve-ratio: true;
 }
 
 .pageTitle {
-    -fx-font-size: 28px;
+    -fx-font-size: 48px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
     -fx-translate-y: -100;
@@ -29,7 +38,7 @@
 }
 
 .sectionTitle {
-    -fx-font-size: 20px;
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
 }
@@ -37,32 +46,38 @@
 /* ==========================================================================
    3. SIDEBAR & NAVIGATION
    ========================================================================== */
-.sidebar {
+.sidebarWrapper {
     -fx-background-color: #fff2e5;
-    -fx-background-radius: 0 30 30 0;
-    -fx-padding: 20;
-    -fx-spacing: 15;
-    -fx-min-width: 240;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 0);
+    -fx-background-radius: 32;
+    -fx-border-radius: 32;
+    -fx-min-width: 340;
+    -fx-max-width: 340;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 2, 0);
+}
+
+.sidebar {
+    -fx-background-color: transparent;
+    -fx-padding: 30;
+    -fx-spacing: 20;
+    -fx-min-width: 340;
 }
 
 .sidebarTitle {
-    -fx-font-size: 20px;
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 0 0 15 0;
 }
 
-/* Style des boutons catégories (Style "Menu" transparent pour la sidebar) */
 .catBtn {
     -fx-background-color: transparent;
     -fx-text-fill: #333;
-    -fx-font-size: 16px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-alignment: center-left;
-    -fx-padding: 10 15;
+    -fx-padding: 20 30;
     -fx-cursor: hand;
-    -fx-background-radius: 12;
+    -fx-background-radius: 16;
 }
 
 .catBtn:hover {
@@ -70,7 +85,6 @@
     -fx-text-fill: #e46725;
 }
 
-/* Gestion de l'état sélectionné (venant de common.css) */
 .catBtn.active,
 .catBtn:selected {
     -fx-background-color: #e46725;
@@ -82,39 +96,31 @@
    4. CONTENU & GRILLE PRODUITS
    ========================================================================== */
 .content {
-    -fx-padding: 20;
+    -fx-padding: 30;
     -fx-alignment: top-left;
 }
 
 .grid {
-    -fx-hgap: 20;
-    -fx-vgap: 20;
+    -fx-hgap: 30;
+    -fx-vgap: 30;
     -fx-padding: 10;
 }
 
-/* Style Carte Produit (Venant de Menu.css) */
 .productCard {
     -fx-background-color: white;
-    -fx-background-radius: 20;
+    -fx-background-radius: 25;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
-    -fx-padding: 15;
+    -fx-padding: 20;
     -fx-alignment: center;
-    -fx-spacing: 8;
-
-    /* Taille fixe */
-    -fx-min-width: 180;
-    -fx-max-width: 180;
-    -fx-min-height: 220;
-    -fx-max-height: 220;
-}
-
-.productCard:hover {
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
+    -fx-spacing: 15;
+    -fx-min-width: 260;
+    -fx-max-width: 260;
+    -fx-min-height: 360;
+    -fx-max-height: 360;
 }
 
 .productName {
-    -fx-font-size: 15px;
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
     -fx-text-alignment: center;
@@ -122,7 +128,7 @@
 }
 
 .productPrice {
-    -fx-font-size: 16px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
     -fx-text-fill: #e46725;
 }
@@ -134,535 +140,178 @@
 }
 
 /* ==========================================================================
-   5. BOUTONS D'ACTION (Accueil, Connexion, Standard)
+   5. BOUTONS D'ACTION & GÉNÉRIQUES
    ========================================================================== */
 .btn-start {
     -fx-background-color: #e46725;
     -fx-text-fill: white;
-    -fx-font-size: 26px;
+    -fx-font-size: 48px;
     -fx-font-weight: bold;
-    -fx-padding: 20 60;
-    -fx-background-radius: 40;
+    -fx-padding: 30 100;
+    -fx-background-radius: 60;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(230,103,37,0.2), 16, 0, 0, 6);
-}
-
-.btn-start:hover {
-    -fx-background-color: #ff9f2e;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
 }
 
 .btn-connexion {
     -fx-background-color: transparent;
     -fx-border-color: #e46725;
-    -fx-border-width: 2;
-    -fx-border-radius: 20;
+    -fx-border-width: 3;
+    -fx-border-radius: 30;
     -fx-text-fill: #e46725;
-    -fx-font-size: 16px;
-    -fx-padding: 10 30;
+    -fx-font-size: 24px;
+    -fx-padding: 15 50;
     -fx-cursor: hand;
-}
-
-.btn-connexion:hover {
-    -fx-background-color: rgba(230,103,37,0.1);
-}
-
-/* Boutons génériques (Primary/Secondary venant de common.css) */
-.btn {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-padding: 12 24;
-    -fx-background-radius: 20;
-    -fx-cursor: hand;
-    -fx-text-fill: white;
-}
-
-.btn-primary {
-    -fx-background-color: #e46725;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(230,103,37,0.2), 12, 0, 0, 4);
-}
-
-.btn-primary:hover {
-    -fx-background-color: #ff9f2e;
-}
-
-.btn-secondary {
-    -fx-background-color: #f5f5f5;
-    -fx-text-fill: #333;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);
-}
-
-.btn-secondary:hover {
-    -fx-background-color: #ececec;
 }
 
 /* ==========================================================================
-   6. BARRE DU BAS (Panier & Total)
+   6. BARRE DU BAS (Panier accueil)
    ========================================================================== */
-.bottomBar {
-    -fx-background-color: white;
-    -fx-background-radius: 20 20 0 0;
-    -fx-padding: 10 30;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 0, -5, 0, 0);
-    -fx-min-height: 80;
-}
-
-.cartBtn {
-    -fx-background-color: #e46725;
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-background-radius: 30;
-    -fx-padding: 12 40;
-    -fx-cursor: hand;
-}
-
-.totalText {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333;
-}
-
-/* ==========================================================================
-   7. SCROLLBARS MINIMALISTES (Fix layout)
-   ========================================================================== */
-.scroll-pane, .scroll-pane .viewport {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-}
-
-.scroll-bar {
-    -fx-background-color: transparent;
-    -fx-pref-width: 10;
-    -fx-pref-height: 10;
-}
-
-.scroll-bar .track {
-    -fx-background-color: transparent;
-}
-
-.scroll-bar .thumb {
-    -fx-background-color: rgba(228, 103, 37, 0.5); /* Orange semi-transparent */
-    -fx-background-radius: 5;
-}
-
-.scroll-bar .thumb:hover {
-    -fx-background-color: rgba(228, 103, 37, 0.8);
-}
-
-/* ==========================================================================
-   8. ÉLÉMENTS DIVERS (Formulaires, Status, Quantité)
-   ========================================================================== */
-/* Boutons quantité (+/-) */
-.qtyBtn {
-    -fx-background-color: #f0f0f0;
-    -fx-text-fill: #333;
-    -fx-font-weight: bold;
-    -fx-font-size: 18px;
-    -fx-min-width: 40;
-    -fx-min-height: 40;
-    -fx-background-radius: 50%;
-    -fx-cursor: hand;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 50%;
-}
-
-.qtyBtn:hover {
-    -fx-background-color: #e0e0e0;
-    -fx-border-color: #bbb;
-}
-
-/* Formulaires */
-.form-control {
-    -fx-padding: 12 16;
-    -fx-font-size: 14px;
-    -fx-background-color: white;
-    -fx-border-color: #ddd;
-    -fx-border-width: 1;
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
-}
-
-.form-control:focused {
-    -fx-border-color: #e46725;
-    -fx-border-width: 2;
-}
-
-/* Statuts (Success, Error, Warning) */
-.status {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-padding: 6 12;
-    -fx-background-radius: 16;
-}
-
-.status--success {
-    -fx-background-color: rgba(34,197,94,0.15);
-    -fx-text-fill: #22c55e;
-    -fx-border-color: #22c55e;
-    -fx-border-width: 1;
-}
-
-.status--error {
-    -fx-background-color: rgba(239,68,68,0.15);
-    -fx-text-fill: #ef4444;
-    -fx-border-color: #ef4444;
-    -fx-border-width: 1;
-}
-
-/* Textes divers */
-.cartList { -fx-spacing: 12; -fx-padding: 12; }
-.confirmationTitle { -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #22c55e; -fx-padding: 20 0; }
-.orderInfoLabel { -fx-font-size: 18px; -fx-text-fill: #333; -fx-padding: 6 0; }
-
-
-/* Logo */
-.logoSmall {
-    -fx-fit-width: 180;
-    -fx-preserve-ratio: true;
-}
-
-/* Zone centrale */
-.content {
-    -fx-padding: 20;
-    -fx-alignment: top-left;
-}
-
-/* ============================================
-   SIDEBAR – WRAPPER (FOND + ARRONDI + OMBRE)
-   ============================================ */
-.sidebarWrapper {
-    -fx-background-color: #fff2e5;
-
-    /* TOUS les coins arrondis */
-    -fx-background-radius: 32;
-    -fx-border-radius: 32;
-
-    -fx-min-width: 240;
-    -fx-max-width: 240;
-
-    /* Ombre douce */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 2, 0);
-}
-
-/* ============================================
-   SCROLLPANE DE LA SIDEBAR (TRANSPARENT)
-   ============================================ */
-.sidebar-scroll {
-    -fx-background-color: transparent;
-    -fx-background: transparent;
-    -fx-padding: 0;
-}
-
-/* Viewport transparent (indispensable) */
-.sidebar-scroll > .viewport {
-    -fx-background-color: transparent;
-}
-
-/* Coin en bas à droite */
-.sidebar-scroll > .corner {
-    -fx-background-color: transparent;
-}
-
-/* Contenu réel */
-.sidebar {
-    -fx-background-color: transparent;
-    -fx-padding: 20;
-    -fx-spacing: 15;
-}
-
-/* ============================================
-   BOUTONS CATÉGORIES (SIDEBAR)
-   ============================================ */
-.sidebarTitle {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333;
-    -fx-padding: 0 0 10 0;
-}
-
-.catBtn {
-    -fx-background-color: transparent;
-    -fx-text-fill: #333;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-alignment: center-left;
-    -fx-padding: 10 15;
-    -fx-cursor: hand;
-    -fx-background-radius: 12;
-}
-
-.catBtn:hover {
-    -fx-background-color: rgba(255,255,255,0.6);
-    -fx-text-fill: #e46725;
-}
-
-/* ============================================
-   GRILLE & CARTES PRODUITS
-   ============================================ */
-.grid {
-    -fx-hgap: 20;
-    -fx-vgap: 20;
-    -fx-padding: 10;
-}
-
-.menuCardBtn {
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-    -fx-cursor: hand;
-}
-
-.menuCardBtn:hover {
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-}
-
-.productCard {
-    -fx-background-color: white;
-    -fx-background-radius: 20;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
-    -fx-padding: 15;
-    -fx-alignment: center;
-    -fx-spacing: 8;
-
-    -fx-min-width: 180;
-    -fx-max-width: 180;
-    -fx-min-height: 220;
-    -fx-max-height: 220;
-}
-
-.productCard:hover {
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
-.productName {
-    -fx-font-size: 15px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333;
-    -fx-text-alignment: center;
-    -fx-wrap-text: true;
-}
-
-.productPrice {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #e46725;
-}
-
-/* ============================================
-   BOTTOM BAR
-   ============================================ */
-.bottomBar {
-    -fx-background-color: rgba(255,255,255,0.75);
-    -fx-background-radius: 20 20 0 0;
-    -fx-padding: 10 30;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 12, 0, 0, 4);
-    -fx-min-height: 80;
-}
-
-.cartBtn {
-    -fx-background-color: #e46725;
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-background-radius: 30;
-    -fx-padding: 12 40;
-    -fx-cursor: hand;
-    -fx-translate-x: 40;
-}
-
-.totalText {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333;
-    -fx-translate-y:15;
-}
-
-/* ============================================
-   BOTTOM BAR – WRAPPER (STYLE SIDEBAR)
-   ============================================ */
 .bottomWrapper {
     -fx-background-color: #fff2e5;
-
-    /* Gros arrondis sur TOUS les côtés */
-    -fx-background-radius: 32;
-    -fx-border-radius: 32;
-
-    /* LARGEUR PLUS GRANDE */
-    -fx-min-width: 900;
-    -fx-max-width: 1200;
-
-    /* Hauteur confortable */
-    -fx-min-height: 90;
-
-    /* Ombre douce */
+    -fx-background-radius: 40;
+    -fx-border-radius: 40;
+    -fx-min-width: 1000;
+    -fx-max-width: 1300;
+    -fx-min-height: 150;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, -2);
 }
 
 .bottomBar {
     -fx-background-color: transparent;
-    -fx-padding: 16 40;
+    -fx-padding: 20 50;
 }
 
-/* ===== Cart bottom (comme Accueil) ===== */
-.bottomWrapper {
-    -fx-background-color: #fff2e5;
-    -fx-background-radius: 32;
-    -fx-border-radius: 32;
-
-    -fx-min-width: 900;
-    -fx-max-width: 1200;
-    -fx-min-height: 90;
-
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, -2);
+.cartBtn {
+    -fx-background-color: #e46725;
+    -fx-text-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 50;
+    -fx-padding: 20 60;
+    -fx-cursor: hand;
 }
 
-/* Barre du panier (contenu) */
+.totalText {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* ==========================================================================
+   7. PAGE PANIER (CART) - STYLES SPÉCIFIQUES
+   ========================================================================== */
 .cartBottomBar {
-    -fx-background-color: transparent;
-    -fx-padding: 18 30;
+    -fx-padding: 20 40;
 }
 
-/* Total */
 .cartTotalLabel {
-    -fx-font-size: 18px;
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
+    -fx-text-fill: #555;
 }
 
 .cartTotalValue {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
+    -fx-font-size: 42px;
+    -fx-font-weight: 900;
     -fx-text-fill: #e46725;
 }
 
-/* Zone boutons */
 .cartActionsBar {
-    -fx-background-color: transparent;
+    -fx-spacing: 20;
+    -fx-alignment: center-right;
 }
 
-/* ===== Boutons panier ===== */
+/* --- BOUTONS DU PANIER --- */
 .cartActionBtn {
-    -fx-font-size: 16px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
-
-    -fx-padding: 12 22;
-    -fx-background-radius: 30;
-    -fx-border-radius: 30;
-
+    -fx-padding: 20 40;
+    -fx-background-radius: 40;
     -fx-cursor: hand;
-    -fx-background-insets: 0;
-
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 12, 0.2, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
 }
 
 .cartActionSecondary {
     -fx-background-color: white;
-    -fx-text-fill: #2b2b2b;
-    -fx-border-color: rgba(0,0,0,0.12);
+    -fx-text-fill: #555;
+    -fx-border-color: #ddd;
     -fx-border-width: 2;
+    -fx-border-radius: 40;
 }
-
 .cartActionSecondary:hover {
-    -fx-background-color: #f6f6f6;
-}
-
-.cartActionSecondary:pressed {
-    -fx-background-color: #eeeeee;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 10, 0.2, 0, 3);
+    -fx-background-color: #f5f5f5;
+    -fx-text-fill: #333;
 }
 
 .cartActionPrimary {
     -fx-background-color: #e46725;
     -fx-text-fill: white;
-    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
-
 .cartActionPrimary:hover {
     -fx-background-color: #ff9f2e;
-}
-
-.cartActionPrimary:pressed {
-    -fx-background-color: #d85f22;
-    -fx-effect: dropshadow(gaussian, rgba(230,103,37,0.18), 10, 0.2, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 .cartActionWide {
-    -fx-min-width: 230px;
+    -fx-min-width: 280;
 }
 
-/* =========================
-   CONFIRMATION PAGE
-   ========================= */
-
-.confirmTop {
-    -fx-padding: 40 0 0 0;
-}
-
-.confirmContent {
-    -fx-padding: 20 40;
-}
-
+/* ==========================================================================
+   8. PAGE CONFIRMATION
+   ========================================================================== */
 .confirmIcon {
-    -fx-font-size: 90px;
-    -fx-font-weight: bold;
+    -fx-font-size: 120px;
     -fx-text-fill: #22c55e;
 }
 
 .confirmTitle {
-    -fx-font-size: 48px;
-    -fx-font-weight: 800;
-    -fx-text-fill: #22c55e;
+    -fx-font-size: 56px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #333;
 }
 
 .confirmSubtitle {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2b2b2b;
+    -fx-font-size: 28px;
+    -fx-text-fill: #666;
 }
 
 .confirmInfoBox {
-    -fx-min-width: 900px;
-    -fx-max-width: 1100px;
-    -fx-padding: 22 26;
-    -fx-background-color: rgba(255,255,255,0.55);
-    -fx-background-radius: 18;
-    -fx-border-color: rgba(0,0,0,0.10);
-    -fx-border-radius: 18;
+    -fx-background-color: rgba(255,255,255,0.8);
+    -fx-background-radius: 20;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 20;
     -fx-border-width: 2;
+    -fx-padding: 30;
+    -fx-min-width: 600;
 }
 
 .confirmInfoTitle {
-    -fx-font-size: 24px;
-    -fx-font-weight: 800;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
     -fx-text-fill: #333;
 }
 
 .confirmInfoText {
-    -fx-font-size: 18px;
-    -fx-text-fill: #444;
+    -fx-font-size: 24px;
+    -fx-text-fill: #555;
 }
 
-.confirmBottom {
-    -fx-padding: 0 0 26 0;
+/* ==========================================================================
+   9. SCROLLBARS VERTICALES
+   ========================================================================== */
+.scroll-pane, .scroll-pane .viewport {
+    -fx-background-color: transparent;
 }
 
-/* Language flags */
-.langSelected {
-    -fx-padding: 6;
-    -fx-border-color: #22c55e;
-    -fx-border-width: 3;
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
-    -fx-background-color: rgba(34,197,94,0.10);
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 20;
 }
-.langIcon {
-    -fx-cursor: hand;
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(228, 103, 37, 0.5);
+    -fx-background-radius: 10;
 }

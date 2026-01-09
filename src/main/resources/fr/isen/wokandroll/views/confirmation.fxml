@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -15,8 +14,8 @@
 
     <top>
         <VBox spacing="10">
-            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="topbar" style="-fx-padding: 10 20;">
-                <ImageView styleClass="logoSmall" fitWidth="180" preserveRatio="true">
+            <HBox alignment="CENTER_LEFT" spacing="30" styleClass="topbar">
+                <ImageView styleClass="logoSmall" fitWidth="300" preserveRatio="true">
                     <image>
                         <Image url="@../images/logo.jpg"/>
                     </image>
@@ -26,38 +25,26 @@
     </top>
 
     <center>
-        <VBox spacing="18" alignment="CENTER" styleClass="confirmContent">
+        <VBox spacing="30" alignment="CENTER" styleClass="confirmContent">
 
-            <Label text="✓"
-                   styleClass="confirmIcon"
-                   style="-fx-font-size: 60px; -fx-text-fill: #22c55e;"/>
+            <Label text="✓" styleClass="confirmIcon"/>
 
-            <Label text="Order Confirmed!"
-                   styleClass="confirmTitle"
-                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+            <Label text="Order Confirmed!" styleClass="confirmTitle"/>
 
-            <Label text="Thank you for your visit!"
-                   styleClass="confirmSubtitle"
-                   style="-fx-font-size: 18px; -fx-text-fill: #666;"/>
+            <Label text="Thank you for your visit!" styleClass="confirmSubtitle"/>
 
-            <VBox spacing="8"
-                  alignment="CENTER"
-                  styleClass="confirmInfoBox"
-                  style="-fx-background-color: #f9f9f9; -fx-padding: 20; -fx-background-radius: 10; -fx-max-width: 400;">
+            <VBox spacing="15" alignment="CENTER" styleClass="confirmInfoBox">
 
                 <Label fx:id="orderNumber"
                        text="Order number: #..."
-                       styleClass="confirmInfoTitle"
-                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                       styleClass="confirmInfoTitle"/>
 
                 <Label fx:id="estimatedTime"
                        text="Estimated time: ..."
-                       styleClass="confirmInfoText"
-                       style="-fx-font-size: 16px; -fx-text-fill: #555;"/>
+                       styleClass="confirmInfoText"/>
             </VBox>
 
         </VBox>
     </center>
-
 
 </BorderPane>

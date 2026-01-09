@@ -20,7 +20,7 @@
     <top>
         <VBox style="-fx-background-color: transparent; -fx-padding: 10 20;">
             <HBox alignment="CENTER_LEFT" spacing="20">
-                <ImageView styleClass="logoSmall" fitWidth="180" preserveRatio="true">
+                <ImageView styleClass="logoSmall" fitWidth="300" preserveRatio="true">
                     <image>
                         <Image url="@../images/logo.jpg"/>
                     </image>
@@ -44,7 +44,7 @@
 
                             <Button text="Home" styleClass="catBtn" onAction="#goToAccueil">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image><Image url="@../images/icone/Home.png"/></image>
                                     </ImageView>
                                 </graphic>
@@ -52,7 +52,7 @@
 
                             <Button text="Starters" styleClass="catBtn" onAction="#goToStarters">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image><Image url="@../images/icone/Starters.png"/></image>
                                     </ImageView>
                                 </graphic>
@@ -60,7 +60,7 @@
 
                             <Button text="Main Dishes" styleClass="catBtn" onAction="#goToMainDishes">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image><Image url="@../images/icone/Maindishes.png"/></image>
                                     </ImageView>
                                 </graphic>
@@ -68,7 +68,7 @@
 
                             <Button text="Desserts" styleClass="catBtn" onAction="#goToDesserts">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image><Image url="@../images/icone/Desserts.png"/></image>
                                     </ImageView>
                                 </graphic>
@@ -76,7 +76,7 @@
 
                             <Button text="Drinks" styleClass="catBtn" onAction="#goToDrinks">
                                 <graphic>
-                                    <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
                                         <image><Image url="@../images/icone/Drinks.png"/></image>
                                     </ImageView>
                                 </graphic>
