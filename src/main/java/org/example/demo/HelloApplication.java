@@ -11,8 +11,8 @@ public class HelloApplication extends Application {
         // Initialiser SceneManager avec le stage AVANT de charger la première scène
         SceneManager.getInstance().initialize(stage);
 
-        // Charger hello-view.fxml via SceneManager
-        SceneManager.getInstance().loadInitialScene("hello-view");
+        // Charger home.fxml via SceneManager
+        SceneManager.getInstance().loadInitialScene("home");
 
         stage.setTitle("Wok & Roll");
         stage.setFullScreen(true);

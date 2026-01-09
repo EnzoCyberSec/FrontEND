@@ -34,7 +34,7 @@ public class SceneManager {
     }
 
     /**
-     * Charge la toute première scène (généralement hello-view).
+     * Charge la toute première scène (généralement home).
      * Applique la feuille de style globale menu.css.
      */
     public void loadInitialScene(String sceneName) throws IOException {

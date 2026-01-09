@@ -311,7 +311,7 @@ public class AccueilController {
     }
 
     // Liens de navigation
-    @FXML public void goBack() throws IOException { SceneManager.getInstance().switchScene("hello-view"); }
+    @FXML public void goBack() throws IOException { SceneManager.getInstance().switchScene("home"); }
     @FXML public void goToCart() throws IOException { SceneManager.getInstance().switchScene("cart"); }
     @FXML public void goToAccueil() throws IOException { SceneManager.getInstance().switchScene("accueil"); }
     @FXML public void goToMainDishes() throws IOException { SceneManager.getInstance().switchScene("plats"); }

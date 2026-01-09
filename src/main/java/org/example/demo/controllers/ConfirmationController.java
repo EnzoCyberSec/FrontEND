@@ -43,7 +43,7 @@ public class ConfirmationController {
         // Action executed when the timer ends
         delay.setOnFinished(event -> {
             try {
-                // Simulates a click on "New Order" to return to 'hello-view'
+                // Simulates a click on "New Order" to return to 'home'
                 newOrder();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -65,6 +65,6 @@ public class ConfirmationController {
 
     @FXML
     public void newOrder() throws IOException {
-        SceneManager.getInstance().switchScene("hello-view");
+        SceneManager.getInstance().switchScene("home");
     }
 }

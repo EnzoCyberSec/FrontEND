@@ -32,7 +32,7 @@
             <StackPane styleClass="sidebarWrapper">
                 <VBox styleClass="sidebar" spacing="10">
                     <Label text="Menu" styleClass="sidebarTitle"/>
-                    <Button text="← Accueil" styleClass="catBtn" onAction="#goBack"/>
+                    <Button text="← Start Menu" styleClass="catBtn" onAction="#goBack"/>
                 </VBox>
             </StackPane>
         </VBox>

@@ -83,7 +83,7 @@
                             </Button>
 
                             <VBox style="-fx-padding: 20 0 0 0;">
-                                <Button text="← Back" styleClass="catBtn" onAction="#goBack"/>
+                                <Button text="← Start Menu" styleClass="catBtn" onAction="#goBack"/>
                             </VBox>
 
                         </VBox>
